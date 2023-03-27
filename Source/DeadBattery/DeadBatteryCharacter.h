@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Projectile.h"
 #include "DeadBatteryCharacter.generated.h"
 
 
@@ -36,10 +37,17 @@ class ADeadBatteryCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
+	
+	/** Shoot Input Action */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    class UInputAction* ShootAction;
 
+	
 public:
 	ADeadBatteryCharacter();
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AProjectile> CannonProjectile;
 
 protected:
 
@@ -48,6 +56,10 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for looking input */
+	void Shoot(const FInputActionValue& Value);
+	
 			
 
 protected:

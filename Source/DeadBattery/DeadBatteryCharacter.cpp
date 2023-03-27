@@ -83,7 +83,9 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Look);
-
+		
+		//Shooting
+        EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Shoot);
 	}
 
 }
@@ -122,6 +124,14 @@ void ADeadBatteryCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
+{
+	//Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	GetWorld()->SpawnActor<AProjectile>(CannonProjectile, this->GetActorLocation(), GetActorRotation(), ActorSpawnParams);
 }
 
 

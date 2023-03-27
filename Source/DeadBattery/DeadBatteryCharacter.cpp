@@ -131,7 +131,8 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	//Set Spawn Collision Handling Override
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	GetWorld()->SpawnActor<AProjectile>(CannonProjectile, this->GetActorLocation(), GetActorRotation(), ActorSpawnParams);
+	GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetActorLocation() + GetActorRotation().RotateVector(FVector(0,0,0)),
+										GetActorRotation(), ActorSpawnParams);
 }
 
 

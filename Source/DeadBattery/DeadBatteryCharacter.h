@@ -17,6 +17,7 @@ class ADeadBatteryCharacter : public ACharacter
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+	
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -48,6 +49,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class AProjectile> CannonProjectile;
+
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	class USceneComponent* Root;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	class USkeletalMeshComponent* Mesh;*/
 
 protected:
 

@@ -49,6 +49,14 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	/*Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
+
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(Root);*/
+
+	
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -130,9 +138,10 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 {
 	//Set Spawn Collision Handling Override
 	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetActorLocation() + GetActorRotation().RotateVector(FVector(0,0,0)),
-										GetActorRotation(), ActorSpawnParams);
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
+	GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),GetMesh()->GetSocketRotation("CannonSocket"), ActorSpawnParams);
+
+	
 }
 
 

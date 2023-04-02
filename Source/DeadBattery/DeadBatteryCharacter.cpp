@@ -35,7 +35,7 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-
+	
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -64,6 +64,10 @@ void ADeadBatteryCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+	GetWorld()->GetFirstPlayerController()->bEnableClickEvents = true;
+	GetWorld()->GetFirstPlayerController()->bEnableMouseOverEvents = true;
+	
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -132,7 +136,7 @@ void ADeadBatteryCharacter::Look(const FInputActionValue& Value)
 	{
 		// add yaw and pitch input to controller
 		//AddControllerYawInput(LookAxisVector.X);
-		//AddControllerPitchInput(LookAxisVector.Y);
+		//AddControllerPitchInput(LookAxisVector.Y); 
 	}
 }
 
@@ -141,8 +145,21 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	//Set Spawn Collision Handling Override
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
-	GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),GetMesh()->GetSocketRotation("CannonSocket"), ActorSpawnParams);
+	
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	FVector LaunchDir(0,0,0);
 
+	FHitResult Hit;
+	//Controller->CastToPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+	PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+	if (Hit.bBlockingHit){
+		if (Hit.GetActor() != NULL){
+			LaunchDir = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
+		}
+	}
+	this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
+	AProjectile*  Projectile = GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),LaunchDir.Rotation(), ActorSpawnParams);
 	
 }
 

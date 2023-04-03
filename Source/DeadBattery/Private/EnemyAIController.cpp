@@ -24,10 +24,18 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 	if (EnemyCharacter != NULL) {
 		ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));		// Get Player Character
 
-		if (PlayerCharacter != NULL)
+		if (PlayerCharacter != NULL) {
 			MoveToActor(PlayerCharacter, 40.0f, true);					// Move To player Character
-		else
+			FVector PlayerLoc = PlayerCharacter->GetActorLocation();
+			FVector EnemyLoc = EnemyCharacter->GetActorLocation();
+			PlayerLoc.Z = 0;
+			EnemyLoc.Z = 0;
+			FRotator lookAtRotation = FRotationMatrix::MakeFromX(PlayerLoc - EnemyLoc).Rotator();
+			EnemyCharacter->SetActorRotation(lookAtRotation);
+		}
+		else {
 			UE_LOG(LogTemp, Warning, TEXT("PlAYER NOT FOUND"));
+		}
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("AI NOT FOUND"));

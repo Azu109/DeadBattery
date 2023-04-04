@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "Projectile.h"
 #include "DeadBatteryCharacter.generated.h"
 
 
@@ -52,7 +51,7 @@ public:
 	ADeadBatteryCharacter();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AProjectile> CannonProjectile;
+	TSubclassOf<class ADeadBatteryProjectile> CannonProjectile;
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	class USceneComponent* Root;
@@ -85,7 +84,7 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
-	// To add mapping context
+	// BEGIN PLAY
 	virtual void BeginPlay();
 
 public:

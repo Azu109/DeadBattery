@@ -19,7 +19,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxHealth;
+	
+	float CurrentHealth;
+	
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

@@ -1,17 +1,19 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "Projectile.generated.h"
+#include "EnemyCharacter.h"
+#include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "DeadBatteryProjectile.generated.h"
 
 
-class USphereComponent;
-class UProjectileMovementComponent;
-
-UCLASS(config = Game)
-class AProjectile : public AActor
+/**
+ * 
+ */
+UCLASS()
+class DEADBATTERY_API ADeadBatteryProjectile : public AActor
 {
 	GENERATED_BODY()
 
@@ -19,8 +21,6 @@ class AProjectile : public AActor
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
 	USphereComponent* CollisionComp;
 
-	UPROPERTY(EditAnywhere, Category = Projectile)
-	int ProjectileDamage;
 
 	/*UPROPERTY(EditAnywhere, Category = ProjectileEffects)
 	UNiagaraSystem* spawnEffect;*/
@@ -34,8 +34,12 @@ class AProjectile : public AActor
 	FTimerHandle MemberTimerHandle;
 
 public:
-	AProjectile();
+	ADeadBatteryProjectile();
 	/** called when projectile hits something */
+
+	//Begin Play
+	virtual void BeginPlay();
+	
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
@@ -46,9 +50,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PE)
 	class USoundBase* GroundHitSFX;*/
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
+	float ProjectileDamage;
 	
 	/** Returns CollisionComp subobject **/
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
+	
 };

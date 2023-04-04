@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "DeadBatteryCharacter.h"
+
+#include "DeadBatteryProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -149,13 +151,12 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 {
 	if(!IsAiming)
 		return;
-	
-	//Set Spawn Collision Handling Override
+
 	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	AProjectile*  Projectile = GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDir.Rotation().Yaw, 0), ActorSpawnParams);
+	GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDir.Rotation().Yaw, 0), ActorSpawnParams);
 }
 
 void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)

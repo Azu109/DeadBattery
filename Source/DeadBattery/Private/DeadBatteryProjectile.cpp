@@ -38,7 +38,6 @@ void ADeadBatteryProjectile::BeginPlay()
 
 void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("HITTING!!!!!"));
 	bool EnemyHit = false;
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics

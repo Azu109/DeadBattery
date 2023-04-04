@@ -58,8 +58,13 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);*/
 
-	LaunchDir = FVector(0,0,0);
+	LaunchDirection = FVector(0,0,0);
 	IsAiming = false;
+	CurrentBloodMeter = MaxBloodMeter;
+	CurrentEnergyMeter = MaxEnergyMeter;
+
+	
+	
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -79,6 +84,27 @@ void ADeadBatteryCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 			AddControllerPitchInput(15);
 			AddControllerYawInput(90);
+		}
+	}
+	FireRateTimer = 1.0f / (FireRate/60.0f);
+	CanFire = true;
+}
+
+void ADeadBatteryCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if(CurrentEnergyMeter < MaxEnergyMeter)
+		CurrentEnergyMeter += DeltaSeconds;
+	
+	if(!CanFire)
+	{
+		FireRateTimer -= DeltaSeconds;
+		if(FireRateTimer<=0)
+		{
+			FireRateTimer = 1.0f / (FireRate/60.0f);
+			CanFire = true;
+			UE_LOG(LogTemp, Warning, TEXT("Fire Rate: %f "),FireRateTimer);
+			UE_LOG(LogTemp, Warning, TEXT("DELTA TIME: %f "),DeltaSeconds);
 		}
 	}
 }
@@ -142,21 +168,24 @@ void ADeadBatteryCharacter::Look(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// add yaw and pitch input to controller
-		//AddControllerYawInput(LookAxisVector.X);
-		//AddControllerPitchInput(LookAxisVector.Y); 
+		// AddControllerYawInput(LookAxisVector.X);
+		// AddControllerPitchInput(LookAxisVector.Y); 
 	}
 }
 
 void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 {
-	if(!IsAiming)
+	if(!IsAiming && !CanFire)
 		return;
-
+	
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDir.Rotation().Yaw, 0), ActorSpawnParams);
+	if(CanFire)
+	GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDirection.Rotation().Yaw, 0), ActorSpawnParams);
+
+	CanFire = false;
 }
 
 void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
@@ -169,11 +198,11 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 	
 	if (Hit.bBlockingHit){
 		if (Hit.GetActor() != NULL){
-			LaunchDir = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
+			LaunchDirection = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
 		}
 	}
 	
-	this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
+	this->SetActorRotation(FRotator( 0, LaunchDirection.Rotation().Yaw, 0));
 
 	IsAiming = true;
 }

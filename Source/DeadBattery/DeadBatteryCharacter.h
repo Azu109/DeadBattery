@@ -17,7 +17,6 @@ class ADeadBatteryCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 	
-
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
@@ -53,13 +52,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ADeadBatteryProjectile> CannonProjectile;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
+	float MaxBloodMeter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
+	float MaxEnergyMeter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
+	float CurrentBloodMeter;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health)
+	float CurrentEnergyMeter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	float FireRate; // In RPM
+
+	float FireRateTimer;
+
+	bool CanFire;
+
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	class USceneComponent* Root;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	class USkeletalMeshComponent* Mesh;*/
 
-	FVector LaunchDir;
+	FVector LaunchDirection;
 	bool IsAiming;
 
 protected:
@@ -86,6 +102,8 @@ protected:
 	
 	// BEGIN PLAY
 	virtual void BeginPlay();
+
+	virtual void Tick(float DeltaSeconds) override;
 
 public:
 	/** Returns CameraBoom subobject **/

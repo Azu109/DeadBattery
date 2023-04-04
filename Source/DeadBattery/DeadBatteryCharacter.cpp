@@ -56,7 +56,8 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);*/
 
-	
+	LaunchDir = FVector(0,0,0);
+	IsAiming = false;
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -100,6 +101,10 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 		
 		//Shooting
         EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Shoot);
+
+		//Aiming
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Aim);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ADeadBatteryCharacter::StopAiming);
 	}
 
 }
@@ -142,27 +147,39 @@ void ADeadBatteryCharacter::Look(const FInputActionValue& Value)
 
 void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 {
+	if(!IsAiming)
+		return;
+	
 	//Set Spawn Collision Handling Override
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
 	
+	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
+	AProjectile*  Projectile = GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDir.Rotation().Yaw, 0), ActorSpawnParams);
+}
+
+void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
+{
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	FVector LaunchDir(0,0,0);
 
 	FHitResult Hit;
 	//Controller->CastToPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 	PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
+	
 	if (Hit.bBlockingHit){
 		if (Hit.GetActor() != NULL){
 			LaunchDir = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
 		}
 	}
-	this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	AProjectile*  Projectile = GetWorld()->SpawnActor<AProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),LaunchDir.Rotation(), ActorSpawnParams);
 	
+	this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
+
+	IsAiming = true;
 }
 
-
+void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
+{
+	IsAiming = false;
+}
 
 

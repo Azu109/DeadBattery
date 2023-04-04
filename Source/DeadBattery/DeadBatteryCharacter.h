@@ -42,6 +42,10 @@ class ADeadBatteryCharacter : public ACharacter
 	/** Shoot Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     class UInputAction* ShootAction;
+    
+    /** Aim Input Action */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    class UInputAction* AimAction;
 
 	
 public:
@@ -56,6 +60,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	class USkeletalMeshComponent* Mesh;*/
 
+	FVector LaunchDir;
+	bool IsAiming;
+
 protected:
 
 	/** Called for movement input */
@@ -64,9 +71,14 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-	/** Called for looking input */
+	/** Called for shooting input */
 	void Shoot(const FInputActionValue& Value);
 	
+	/** Called for aiming input */ 
+    void Aim(const FInputActionValue& Value);
+
+	/** Called for stop aiming input */ 
+	void StopAiming(const FInputActionValue& Value);
 			
 
 protected:
@@ -82,4 +94,5 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
+
 

@@ -82,6 +82,8 @@ public:
 	class USkeletalMeshComponent* Mesh;*/
 
 	FVector LaunchDirection;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shooting)
 	bool IsAiming;
 	
 	UFUNCTION()

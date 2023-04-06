@@ -212,4 +212,31 @@ void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 	IsAiming = false;
 }
 
+void ADeadBatteryCharacter::BloodMeterChange(float Change)
+{
+	CurrentBloodMeter = CurrentBloodMeter + Change;
+
+	if (CurrentBloodMeter < 0)
+		CurrentBloodMeter = 0;
+
+	else if (CurrentBloodMeter > MaxBloodMeter)
+		CurrentBloodMeter = MaxBloodMeter;
+
+	UE_LOG(LogTemp, Warning, TEXT("Blood: %f"), CurrentBloodMeter);
+}
+
+void ADeadBatteryCharacter::EnergyMeterChange(float Change)
+{
+	CurrentEnergyMeter = CurrentEnergyMeter + Change;
+
+	if (CurrentEnergyMeter < 0)
+		CurrentEnergyMeter = 0;
+
+	else if (CurrentEnergyMeter > MaxEnergyMeter)
+		CurrentEnergyMeter = MaxEnergyMeter;
+
+	UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
+
+}
+
 

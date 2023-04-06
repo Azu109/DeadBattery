@@ -62,6 +62,7 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	IsAiming = false;
 	CurrentBloodMeter = MaxBloodMeter;
 	CurrentEnergyMeter = MaxEnergyMeter;
+	
 
 	
 	
@@ -75,6 +76,7 @@ void ADeadBatteryCharacter::BeginPlay()
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 	GetWorld()->GetFirstPlayerController()->bEnableClickEvents = true;
 	GetWorld()->GetFirstPlayerController()->bEnableMouseOverEvents = true;
+	
 	
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))

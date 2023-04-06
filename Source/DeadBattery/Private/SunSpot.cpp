@@ -22,8 +22,7 @@ ASunSpot::ASunSpot()
 
 	RootComponent = CapsuleComp;
 
-	CapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ASunSpot::OnOverlapBegin);
-	CapsuleComp->OnComponentEndOverlap.AddDynamic(this, &ASunSpot::OnOverlapEnd);
+	
 
 }
 
@@ -32,7 +31,8 @@ void ASunSpot::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	CapsuleComp->OnComponentBeginOverlap.AddDynamic(this, &ASunSpot::OnOverlapBegin);
+	CapsuleComp->OnComponentEndOverlap.AddDynamic(this, &ASunSpot::OnOverlapEnd);
 
 }
 

@@ -95,8 +95,7 @@ void ADeadBatteryCharacter::BeginPlay()
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if(CurrentEnergyMeter < MaxEnergyMeter)
-		CurrentEnergyMeter += DeltaSeconds;
+	EnergyMeterChange(-DeltaSeconds * EnergyDrainRate); // Slowly Decrease Over Time
 	
 	if(!CanFire)
 	{
@@ -109,6 +108,8 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 			UE_LOG(LogTemp, Warning, TEXT("DELTA TIME: %f "),DeltaSeconds);
 		}
 	}
+
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -177,14 +178,11 @@ void ADeadBatteryCharacter::Look(const FInputActionValue& Value)
 
 void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 {
-	if(!IsAiming && !CanFire)
-		return;
-	
 	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	if(CanFire && CurrentEnergyMeter>=EnergyDrainPerShot)
+	if(CanFire && CurrentEnergyMeter>=EnergyDrainPerShot && IsAiming)
 	{
 		CurrentEnergyMeter -= EnergyDrainPerShot;
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDirection.Rotation().Yaw, 0), ActorSpawnParams);

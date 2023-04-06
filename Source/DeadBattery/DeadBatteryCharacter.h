@@ -78,6 +78,11 @@ public:
 	FVector LaunchDirection;
 	bool IsAiming;
 
+	UFUNCTION()
+	void BloodMeterChange(float Change);
+
+	void EnergyMeterChange(float Change);
+
 protected:
 
 	/** Called for movement input */

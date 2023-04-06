@@ -60,9 +60,8 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 
 	LaunchDirection = FVector(0,0,0);
 	IsAiming = false;
-	CurrentBloodMeter = MaxBloodMeter;
-	CurrentEnergyMeter = MaxEnergyMeter;
-
+	
+	CurrentBloodMeter = CurrentEnergyMeter = MaxBloodMeter = MaxEnergyMeter = 0.0f;
 	
 	
 }
@@ -76,6 +75,9 @@ void ADeadBatteryCharacter::BeginPlay()
 	GetWorld()->GetFirstPlayerController()->bEnableClickEvents = true;
 	GetWorld()->GetFirstPlayerController()->bEnableMouseOverEvents = true;
 	
+	CurrentBloodMeter = MaxBloodMeter;
+	CurrentEnergyMeter = MaxEnergyMeter;
+
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -210,6 +212,34 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 {
 	IsAiming = false;
+}
+
+
+void ADeadBatteryCharacter::BloodMeterChange(float Change)
+{
+	CurrentBloodMeter = CurrentBloodMeter + Change;
+
+	if (CurrentBloodMeter < 0)
+		CurrentBloodMeter = 0;
+
+	else if (CurrentBloodMeter > MaxBloodMeter)
+		CurrentBloodMeter = MaxBloodMeter;
+
+	UE_LOG(LogTemp, Warning, TEXT("Blood: %f"), CurrentBloodMeter);
+}
+
+void ADeadBatteryCharacter::EnergyMeterChange(float Change)
+{
+	CurrentEnergyMeter = CurrentEnergyMeter + Change;
+
+	if (CurrentEnergyMeter < 0)
+		CurrentEnergyMeter = 0;
+
+	else if (CurrentEnergyMeter > MaxEnergyMeter)
+		CurrentEnergyMeter = MaxEnergyMeter;
+
+	UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
+
 }
 
 

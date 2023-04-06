@@ -184,10 +184,12 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	if(CanFire)
-	GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDirection.Rotation().Yaw, 0), ActorSpawnParams);
-
-	CanFire = false;
+	if(CanFire && CurrentEnergyMeter>=EnergyDrainPerShot)
+	{
+		CurrentEnergyMeter -= EnergyDrainPerShot;
+		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDirection.Rotation().Yaw, 0), ActorSpawnParams);
+		CanFire = false;
+	}
 }
 
 void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)

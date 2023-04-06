@@ -64,6 +64,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	float FireRate; // In RPM
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+    	float EnergyDrainPerShot; // In RPM
 
 	float FireRateTimer;
 

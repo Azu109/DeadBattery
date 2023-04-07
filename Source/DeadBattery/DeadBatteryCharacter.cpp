@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "SAdvancedRotationInputBox.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -41,7 +42,9 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = 2.0f;
+	CameraBoom->TargetArmLength = 500.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
 	// Create a follow camera
@@ -96,6 +99,7 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	EnergyMeterChange(-DeltaSeconds * EnergyDrainRate); // Slowly Decrease Over Time
+	BloodMeterChange(-DeltaSeconds * BloodDrainRate); // Slowly Decrease Over Time
 	
 	if(!CanFire)
 	{
@@ -109,7 +113,7 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 		}
 	}
 
-	
+	DeltaTime = DeltaSeconds;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -147,9 +151,19 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
+		FRotator Rotation;
+		FRotator YawRotation;
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		if(!IsAiming)
+		{
+			Rotation = Controller->GetControlRotation();
+			YawRotation= FRotator(0, Rotation.Yaw, 0);
+		}
+		else
+		{
+			Rotation = AimRotation;
+			YawRotation= FRotator(0, Rotation.Yaw, 0);
+		}
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
@@ -203,9 +217,24 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 			LaunchDirection = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
 		}
 	}
-	
-	this->SetActorRotation(FRotator( 0, LaunchDirection.Rotation().Yaw, 0));
 
+	/*FQuat LaunchRotQT = LaunchDirection.Rotation().Quaternion();
+	FQuat ActorRotQT = this->GetActorRotation().Quaternion();
+
+	ActorRotQT = FQuat(FRotator( 0,
+		FMath::Lerp(this->GetActorRotation().Yaw , LaunchDirection.Rotation().Yaw, 5.0f*DeltaTime),
+		0));
+	this->SetActorRotation(ActorRotQT.Rotator());*/
+
+	FRotator From = FRotator( 0,this->GetActorRotation().Yaw,0);
+	FRotator To = FRotator( 0,LaunchDirection.Rotation().Yaw,0);
+	if(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) <150.f)
+		AimRotation = FMath::RInterpTo(From, To, DeltaTime,(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation())*5)/1000);
+	else
+		AimRotation = FMath::RInterpTo(From, To, DeltaTime,10.0);
+	this->SetActorRotation(AimRotation);
+	
+	UE_LOG(LogTemp, Warning, TEXT("DIST: %f"), FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()));
 	IsAiming = true;
 }
 
@@ -224,7 +253,7 @@ void ADeadBatteryCharacter::BloodMeterChange(float Change)
 	else if (CurrentBloodMeter > MaxBloodMeter)
 		CurrentBloodMeter = MaxBloodMeter;
 
-	UE_LOG(LogTemp, Warning, TEXT("Blood: %f"), CurrentBloodMeter);
+	//UE_LOG(LogTemp, Warning, TEXT("Blood: %f"), CurrentBloodMeter);
 }
 
 void ADeadBatteryCharacter::EnergyMeterChange(float Change)
@@ -237,7 +266,7 @@ void ADeadBatteryCharacter::EnergyMeterChange(float Change)
 	else if (CurrentEnergyMeter > MaxEnergyMeter)
 		CurrentEnergyMeter = MaxEnergyMeter;
 
-	UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
+	//UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
 
 }
 

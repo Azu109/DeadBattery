@@ -71,9 +71,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	float EnergyDrainRate; // Unit per second
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	float BloodDrainRate; 
+	
+
 	float FireRateTimer;
 
+	float DeltaTime;
+
 	bool CanFire;
+
+	FRotator AimRotation;
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	class USceneComponent* Root;

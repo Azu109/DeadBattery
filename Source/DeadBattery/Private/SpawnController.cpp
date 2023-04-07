@@ -21,6 +21,8 @@ void ASpawnController::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATargetPoint::StaticClass(), SpawnPoints);								// Get All Spawn Points in World
 	UE_LOG(LogTemp, Warning, TEXT("Array Count: %d"), SpawnPoints.Num());
 
+	NumOfSpawnPointsStart = SpawnPoints.Num() / 2;
+
 	GetWorldTimerManager().SetTimer(SpawnRateTimerHandle, this, &ASpawnController::SpawnEnemies, TimeBetweenSpawns, true);		// Call Spawn Enemies every X amount of Seconds
 	
 }
@@ -30,13 +32,25 @@ void ASpawnController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyCharacter::StaticClass(), EnemiesInLevel);					// Get All Enemies in Level
+
+	if (EnemiesInLevel.Num() <= 0) {																					// Check if no Enemies in Level
+		SpawnEnemies();
+		if (GetWorldTimerManager().IsTimerActive(SpawnRateTimerHandle))
+			GetWorldTimerManager().ClearTimer(SpawnRateTimerHandle);
+		GetWorldTimerManager().SetTimer(SpawnRateTimerHandle, this, &ASpawnController::SpawnEnemies, TimeBetweenSpawns, true);
+	}
+
 }
 
 
 // Spawn Enemies 
 void ASpawnController::SpawnEnemies()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Spawn Enemies"));							
+	UE_LOG(LogTemp, Warning, TEXT("Spawn Enemies"));	
+
+	// SPAWN BASED ON SPAWN POINTS
+	/*
 	for (AActor* Actor : SpawnPoints) 
 	{
 		int Quantity = FMath::RandRange(MinEnemyCount, MaxEnemyCount);				// Random Number of Enemies to Spawn
@@ -45,5 +59,26 @@ void ASpawnController::SpawnEnemies()
 			GetWorld()->SpawnActor<AEnemyCharacter>(BasicEnemy, Actor->GetActorLocation(), Actor->GetActorRotation());				
 		}
 	}
+	*/
+
+
+
+	// SPAWN BASED ON TOTAL ENEMIES IN LEVEL
+
+	Wave++;
+	UE_LOG(LogTemp, Warning, TEXT("Spawning No.: %d"), NumOfEnemies);
+
+	// Randomly spawn between spawn points
+	for (int i = 1; i <= NumOfEnemies; i++) {
+		int RandomSpawner = FMath::RandRange(0, SpawnPoints.Num()-1);
+		GetWorld()->SpawnActor<AEnemyCharacter>(BasicEnemy, SpawnPoints[RandomSpawner]->GetActorLocation(), SpawnPoints[RandomSpawner]->GetActorRotation());
+	}
+	EnemyCountInWave();
+}
+
+
+// Increase Num of Enemies per wave
+void ASpawnController::EnemyCountInWave() {
+	NumOfEnemies = NumOfEnemies + (NumOfEnemies / 2);
 }
 

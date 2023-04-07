@@ -72,7 +72,10 @@ public:
 	float EnergyDrainRate; // Unit per second
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	float BloodDrainRate; 
+	float BloodDrainRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	float BloodMeterGainOnKill;
 	
 
 	float FireRateTimer;

@@ -3,6 +3,9 @@
 
 #include "DeadBatteryProjectile.h"
 
+#include "DeadBattery/DeadBatteryCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
 ADeadBatteryProjectile::ADeadBatteryProjectile()
 {
 	// Use a sphere as a simple collision representation
@@ -51,6 +54,11 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		EnemyHit = true;
 		//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
 		Enemy->CurrentHealth -=  ProjectileDamage;
+		if(Enemy->CurrentHealth<=0)
+		{
+			ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+			Player->BloodMeterChange(Player->BloodMeterGainOnKill);
+		}
 		//OtherComp->AddImpulseAtLocation(GetVelocity() * 2.0f, GetActorLocation());
 	}
 	/*if(!EnemyHit)

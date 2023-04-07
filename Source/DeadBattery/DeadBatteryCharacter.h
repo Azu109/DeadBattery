@@ -84,7 +84,9 @@ public:
 
 	bool CanFire;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	double Score;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	double Timer;
 	
 	FRotator AimRotation;

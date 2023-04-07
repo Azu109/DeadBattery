@@ -66,9 +66,8 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	CurrentBloodMeter = MaxBloodMeter;
 	CurrentEnergyMeter = MaxEnergyMeter;
 	
-
-	
-	
+	Timer = 0.0f;
+	Score = 0.0f;
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -98,6 +97,7 @@ void ADeadBatteryCharacter::BeginPlay()
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	Timer += DeltaSeconds;
 	EnergyMeterChange(-DeltaSeconds * EnergyDrainRate); // Slowly Decrease Over Time
 	BloodMeterChange(-DeltaSeconds * BloodDrainRate); // Slowly Decrease Over Time
 	

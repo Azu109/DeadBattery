@@ -84,6 +84,9 @@ public:
 
 	bool CanFire;
 
+	double Score;
+	double Timer;
+	
 	FRotator AimRotation;
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")

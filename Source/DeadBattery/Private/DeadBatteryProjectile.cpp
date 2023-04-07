@@ -58,6 +58,7 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		{
 			ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			Player->BloodMeterChange(Player->BloodMeterGainOnKill);
+			Player->Score += Player->Timer/60.f +1.f;
 		}
 		//OtherComp->AddImpulseAtLocation(GetVelocity() * 2.0f, GetActorLocation());
 	}

@@ -6,6 +6,12 @@
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EEnemyType : uint8 {
+	ET_Shooting       UMETA(DisplayName="Shooting Enemy"),
+	ET_Melee        UMETA(DisplayName="Melee Enemy"),
+};
+
 UCLASS()
 class DEADBATTERY_API AEnemyCharacter : public ACharacter
 {
@@ -24,7 +30,19 @@ public:
 	float MaxHealth;
 	
 	float CurrentHealth;
+
+	bool CanFire;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FireRate;
+	
+	float FireRateTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EEnemyType EnemyType;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DistanceToPlayerBeforeShooting;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

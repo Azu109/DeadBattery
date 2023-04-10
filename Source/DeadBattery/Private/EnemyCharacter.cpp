@@ -16,6 +16,9 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
+	CanFire = false;
+	//FireRate = 1;
+	FireRateTimer = 1.0f / (FireRate/60.0f);
 }
 
 // Called every frame
@@ -24,6 +27,16 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(CurrentHealth<=0)
 		Destroy();
+
+	if(!CanFire)
+	{
+		FireRateTimer -= DeltaTime;
+		if(FireRateTimer<=0)
+		{
+			FireRateTimer = 1.0f / (FireRate/60.0f);
+			CanFire = true;
+		}
+	}
 }
 
 // Called to bind functionality to input

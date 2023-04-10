@@ -43,6 +43,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DistanceToPlayerBeforeShooting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ADeadBatteryProjectile> ShootingEnemyProjectile;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

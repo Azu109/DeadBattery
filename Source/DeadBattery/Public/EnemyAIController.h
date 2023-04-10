@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "EnemyCharacter.h"
 #include "EnemyAIController.generated.h"
 
 /**
@@ -26,15 +27,11 @@ class DEADBATTERY_API AEnemyAIController : public AAIController
 	
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class ADeadBatteryProjectile> ShootingEnemyProjectile;
-
-	
 	
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	void Shoot();
+	void Shoot(AEnemyCharacter* EnemyCharacter);
 	
 };

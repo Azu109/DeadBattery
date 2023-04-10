@@ -4,7 +4,6 @@
 #include "EnemyAIController.h"
 
 #include "DeadBatteryProjectile.h"
-#include "EnemyCharacter.h"
 #include "VectorTypes.h"
 #include "DeadBattery/DeadBatteryCharacter.h"
 #include "kismet/GameplayStatics.h"
@@ -16,81 +15,76 @@ AEnemyAIController::AEnemyAIController()
 void AEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	CanFire = false;
-	//FireRate = 1;
-	FireRateTimer = 1.0f / (FireRate/60.0f);
 }
 
 void AEnemyAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
-	if(!CanFire)
+
+	AEnemyCharacter* EnemyCharacter = Cast<AEnemyCharacter>(GetPawn()); // Get Enemy Character it is Controlling
+
+	if (EnemyCharacter == NULL)
+		return;
+
+
+	if (EnemyCharacter != NULL)
 	{
-		FireRateTimer -= DeltaSeconds;
-		if(FireRateTimer<=0)
+		ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(
+			UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)); // Get Player Character
+
+		if (PlayerCharacter != NULL)
 		{
-			FireRateTimer = 1.0f / (FireRate/60.0f);
-			CanFire = true;
-		}
-	}
-
-	AEnemyCharacter* EnemyCharacter = Cast<AEnemyCharacter>(GetPawn());						// Get Enemy Character it is Controlling
-
-	if (EnemyCharacter != NULL) {
-		ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));		// Get Player Character
-
-		if (PlayerCharacter != NULL) {
-			if (EnemyType == EEnemyType::ET_Melee) //Enemy is normal mob
-				{
-				MoveToActor(PlayerCharacter, 40.0f, true);					// Move To player Character
+			if (EnemyCharacter->EnemyType == EEnemyType::ET_Melee) //Enemy is normal mob
+			{
+				MoveToActor(PlayerCharacter, 40.0f, true); // Move To player Character
 				FVector PlayerLoc = PlayerCharacter->GetActorLocation();
 				FVector EnemyLoc = EnemyCharacter->GetActorLocation();
 				PlayerLoc.Z = 0;
 				EnemyLoc.Z = 0;
 				FRotator lookAtRotation = FRotationMatrix::MakeFromX(PlayerLoc - EnemyLoc).Rotator();
 				EnemyCharacter->SetActorRotation(lookAtRotation);
-				}
+			}
+			else if (EnemyCharacter->EnemyType == EEnemyType::ET_Shooting)
+			{
+				FVector PlayerLoc = PlayerCharacter->GetActorLocation();
+				FVector EnemyLoc = EnemyCharacter->GetActorLocation();
+				PlayerLoc.Z = 0;
+				EnemyLoc.Z = 0;
+				FRotator lookAtRotation = FRotationMatrix::MakeFromX(PlayerLoc - EnemyLoc).Rotator();
+				EnemyCharacter->SetActorRotation(lookAtRotation);
+				if (FVector::Dist(PlayerLoc, EnemyLoc) > EnemyCharacter->DistanceToPlayerBeforeShooting)
+					MoveToActor(PlayerCharacter, 40.0f, true); // Move To player Character
 				else
 				{
-					FVector PLoc = PlayerCharacter->GetActorLocation();
-					FVector ELoc = EnemyCharacter->GetActorLocation();
-					if (FVector::Dist(PLoc, ELoc) > DistanceToPlayerBeforeShooting) //Enemy is too far from player
-						{
-						MoveToActor(PlayerCharacter, 40.0f, true);					// Move To player Character
-						FVector PlayerLoc = PlayerCharacter->GetActorLocation();
-						FVector EnemyLoc = EnemyCharacter->GetActorLocation();
-						PlayerLoc.Z = 0;
-						EnemyLoc.Z = 0;
-						FRotator lookAtRotation = FRotationMatrix::MakeFromX(PlayerLoc - EnemyLoc).Rotator();
-						EnemyCharacter->SetActorRotation(lookAtRotation);
+					StopMovement();
+					Shoot(EnemyCharacter);
 				}
-				else //Player in in range
-					{
-						Shoot();
-					}
 			}
-
 		}
-		else {
+		else
+		{
 			UE_LOG(LogTemp, Warning, TEXT("PlAYER NOT FOUND"));
 		}
-			
 	}
-	else{
+	else
+	{
 		UE_LOG(LogTemp, Warning, TEXT("AI NOT FOUND"));
 	}
 }
 
-void AEnemyAIController::Shoot()
+void AEnemyAIController::Shoot(AEnemyCharacter* EnemyCharacter)
 {
 	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	
+	ActorSpawnParams.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	if(CanFire)
+	if (EnemyCharacter->CanFire)
 	{
-		GetWorld()->SpawnActor<ADeadBatteryProjectile>(ShootingEnemyProjectile,  this->K2_GetActorLocation(),FRotator( 0, this->K2_GetActorRotation().Yaw, 0), ActorSpawnParams);
-		CanFire = false;
+		GetWorld()->SpawnActor<ADeadBatteryProjectile>(EnemyCharacter->ShootingEnemyProjectile,
+		                                               EnemyCharacter->GetMesh()->GetSocketLocation("CannonSocket"),
+		                                               FRotator(0, this->K2_GetActorRotation().Yaw, 0),
+		                                               ActorSpawnParams);
+		EnemyCharacter->CanFire = false;
 	}
 }

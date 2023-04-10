@@ -153,16 +153,16 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 		FRotator Rotation;
 		FRotator YawRotation;
 		// find out which way is forward
-		if(!IsAiming)
-		{
+		//if(!IsAiming)
+		//{
 			Rotation = Controller->GetControlRotation();
 			YawRotation= FRotator(0, Rotation.Yaw, 0);
-		}
+		/*}
 		else
 		{
 			Rotation = AimRotation;
 			YawRotation= FRotator(0, Rotation.Yaw, 0);
-		}
+		}*/
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);

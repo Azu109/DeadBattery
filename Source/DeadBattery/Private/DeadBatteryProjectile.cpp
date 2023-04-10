@@ -43,6 +43,7 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 {
 	bool EnemyHit = false;
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
+	ADeadBatteryCharacter* PlayerHit  = Cast<ADeadBatteryCharacter>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
@@ -61,6 +62,10 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 			Player->Score += Player->Timer/60.f +1.f;
 		}
 		//OtherComp->AddImpulseAtLocation(GetVelocity() * 2.0f, GetActorLocation());
+	}
+	else if (PlayerHit != nullptr)
+	{
+		PlayerHit->BloodMeterChange(-ProjectileDamage);
 	}
 	/*if(!EnemyHit)
 		UGameplayStatics::SpawnSoundAtLocation(this, GroundHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),.6,FMath::RandRange(0.5,1.5));*/

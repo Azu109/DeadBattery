@@ -18,7 +18,7 @@ void AEnemyCharacter::BeginPlay()
 	CurrentHealth = MaxHealth;
 	CanFire = false;
 	//FireRate = 1;
-	FireRateTimer = 1.0f / (FireRate/60.0f);
+	FireRateTimer = AnimDuration;
 }
 
 // Called every frame
@@ -33,7 +33,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		FireRateTimer -= DeltaTime;
 		if(FireRateTimer<=0)
 		{
-			FireRateTimer = 1.0f / (FireRate/60.0f);
+			FireRateTimer = AnimDuration;
 			CanFire = true;
 		}
 	}
@@ -43,6 +43,5 @@ void AEnemyCharacter::Tick(float DeltaTime)
 void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 

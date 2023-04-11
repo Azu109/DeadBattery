@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "EnemyCharacter.h"
+#include "DeadBattery/DeadBatteryCharacter.h"
 #include "EnemyAIController.generated.h"
 
 /**
@@ -32,6 +33,6 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	void Shoot(AEnemyCharacter* EnemyCharacter);
+	void Shoot(AEnemyCharacter* EnemyCharacter, ADeadBatteryCharacter* Player);
 	
 };

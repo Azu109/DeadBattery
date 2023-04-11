@@ -5,7 +5,6 @@
 
 #include "DeadBatteryProjectile.h"
 #include "VectorTypes.h"
-#include "DeadBattery/DeadBatteryCharacter.h"
 #include "kismet/GameplayStatics.h"
 
 AEnemyAIController::AEnemyAIController()
@@ -53,11 +52,16 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 				FRotator lookAtRotation = FRotationMatrix::MakeFromX(PlayerLoc - EnemyLoc).Rotator();
 				EnemyCharacter->SetActorRotation(lookAtRotation);
 				if (FVector::Dist(PlayerLoc, EnemyLoc) > EnemyCharacter->DistanceToPlayerBeforeShooting)
-					MoveToActor(PlayerCharacter, 40.0f, true); // Move To player Character
+				{
+					MoveToActor(PlayerCharacter, 40.0f, true);
+					EnemyCharacter->InRange = false;
+					EnemyCharacter->FireRateTimer = EnemyCharacter->FirstTimeShotTimer;
+				}
 				else
 				{
 					StopMovement();
-					Shoot(EnemyCharacter);
+					Shoot(EnemyCharacter,PlayerCharacter);
+					EnemyCharacter->InRange = true;
 				}
 			}
 		}
@@ -72,7 +76,7 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 	}
 }
 
-void AEnemyAIController::Shoot(AEnemyCharacter* EnemyCharacter)
+void AEnemyAIController::Shoot(AEnemyCharacter* EnemyCharacter, ADeadBatteryCharacter* Player)
 {
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride =
@@ -83,7 +87,7 @@ void AEnemyAIController::Shoot(AEnemyCharacter* EnemyCharacter)
 	{
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(EnemyCharacter->ShootingEnemyProjectile,
 		                                               EnemyCharacter->GetMesh()->GetSocketLocation("CannonSocket"),
-		                                               FRotator(0, this->K2_GetActorRotation().Yaw, 0),
+		                                               FRotator(0, (Player->GetActorLocation() - this->K2_GetActorLocation()).Rotation().Yaw, 0),
 		                                               ActorSpawnParams);
 		EnemyCharacter->CanFire = false;
 	}

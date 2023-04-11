@@ -31,12 +31,19 @@ public:
 	
 	float CurrentHealth;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool CanFire;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float FireRate;
-	
+	float AnimDuration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool InRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float FireRateTimer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FirstTimeShotTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EEnemyType EnemyType;

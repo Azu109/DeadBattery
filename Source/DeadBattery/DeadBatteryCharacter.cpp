@@ -208,6 +208,24 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	
 	if(!IsAiming && MeleeCooldownTimer<=0)
 	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		FHitResult Hit;
+		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+	
+		if (Hit.bBlockingHit){
+			if (Hit.GetActor() != NULL){
+				LaunchDirection = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
+			}
+		}
+
+		//FRotator From = FRotator( 0,this->GetActorRotation().Yaw,0);
+		FRotator To = FRotator( 0,LaunchDirection.Rotation().Yaw,0);
+		/*if(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) <150.f)
+			AimRotation = FMath::RInterpTo(From, To, DeltaTime,(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation())*5)/1000);
+		else
+			AimRotation = FMath::RInterpTo(From, To, DeltaTime,10.0);*/
+		this->SetActorRotation(To);
+		
 		MeleeCooldownTimer = MeleeCooldownDuration;
 	}
 }

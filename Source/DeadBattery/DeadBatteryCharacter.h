@@ -99,8 +99,17 @@ public:
 
 	FVector LaunchDirection;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shooting)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
 	bool IsAiming;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
+	bool IsMeleeAttacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
+	float MeleeCooldownDuration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
+	float MeleeCooldownTimer;
 	
 	UFUNCTION()
     	void BloodMeterChange(float Change);

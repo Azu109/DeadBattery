@@ -91,6 +91,7 @@ void ADeadBatteryCharacter::BeginPlay()
 	}
 	FireRateTimer = 1.0f / (FireRate/60.0f);
 	CanFire = true;
+	MeleeCooldownTimer = 0;
 }
 
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
@@ -113,6 +114,9 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 	}
 
 	DeltaTime = DeltaSeconds;
+
+	if(MeleeCooldownTimer > 0)
+		MeleeCooldownTimer-=DeltaSeconds;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -200,6 +204,11 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		CurrentEnergyMeter -= EnergyDrainPerShot;
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDirection.Rotation().Yaw, 0), ActorSpawnParams);
 		CanFire = false;
+	}
+	
+	if(!IsAiming && MeleeCooldownTimer<=0)
+	{
+		MeleeCooldownTimer = MeleeCooldownDuration;
 	}
 }
 

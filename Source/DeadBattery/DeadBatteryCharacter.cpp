@@ -21,7 +21,7 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -38,7 +38,7 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	
+
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -49,7 +49,8 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	// Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
@@ -61,11 +62,11 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);*/
 
-	LaunchDirection = FVector(0,0,0);
+	LaunchDirection = FVector(0, 0, 0);
 	IsAiming = false;
 	CurrentBloodMeter = MaxBloodMeter;
 	CurrentEnergyMeter = MaxEnergyMeter;
-	
+
 	Timer = 0.0f;
 	Score = 0.0f;
 	MeleeCooldownTimer = 0;
@@ -79,21 +80,21 @@ void ADeadBatteryCharacter::BeginPlay()
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 	GetWorld()->GetFirstPlayerController()->bEnableClickEvents = true;
 	GetWorld()->GetFirstPlayerController()->bEnableMouseOverEvents = true;
-	
-	
+
+
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 			AddControllerPitchInput(15);
 			AddControllerYawInput(90);
 		}
 	}
-	FireRateTimer = 1.0f / (FireRate/60.0f);
+	FireRateTimer = 1.0f / (FireRate / 60.0f);
 	CanFire = true;
-	
 }
 
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
@@ -102,23 +103,23 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 	Timer += DeltaSeconds;
 	EnergyMeterChange(-DeltaSeconds * EnergyDrainRate); // Slowly Decrease Over Time
 	BloodMeterChange(-DeltaSeconds * BloodDrainRate); // Slowly Decrease Over Time
-	
-	if(!CanFire)
+
+	if (!CanFire)
 	{
 		FireRateTimer -= DeltaSeconds;
-		if(FireRateTimer<=0)
+		if (FireRateTimer <= 0)
 		{
-			FireRateTimer = 1.0f / (FireRate/60.0f);
+			FireRateTimer = 1.0f / (FireRate / 60.0f);
 			CanFire = true;
-			UE_LOG(LogTemp, Warning, TEXT("Fire Rate: %f "),FireRateTimer);
-			UE_LOG(LogTemp, Warning, TEXT("DELTA TIME: %f "),DeltaSeconds);
+			UE_LOG(LogTemp, Warning, TEXT("Fire Rate: %f "), FireRateTimer);
+			UE_LOG(LogTemp, Warning, TEXT("DELTA TIME: %f "), DeltaSeconds);
 		}
 	}
 
 	DeltaTime = DeltaSeconds;
 
-	if(MeleeCooldownTimer > 0)
-		MeleeCooldownTimer-=DeltaSeconds;
+	if (MeleeCooldownTimer > 0)
+		MeleeCooldownTimer -= DeltaSeconds;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -127,8 +128,8 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
 		//Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -138,15 +139,21 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Look);
-		
+
 		//Shooting
-        EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Shoot);
 
 		//Aiming
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Aim);
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ADeadBatteryCharacter::StopAiming);
-	}
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this,
+		                                   &ADeadBatteryCharacter::StopAiming);
 
+		//Sprinting
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this,
+		                                   &ADeadBatteryCharacter::StartSprinting);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this,
+		                                   &ADeadBatteryCharacter::StopSprinting);
+	}
 }
 
 void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
@@ -161,8 +168,8 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 		// find out which way is forward
 		//if(!IsAiming)
 		//{
-			Rotation = Controller->GetControlRotation();
-			YawRotation= FRotator(0, Rotation.Yaw, 0);
+		Rotation = Controller->GetControlRotation();
+		YawRotation = FRotator(0, Rotation.Yaw, 0);
 		/*}
 		else
 		{
@@ -172,17 +179,29 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
+
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		if(MeleeCooldownTimer <= 0)
+
+		if (MeleeCooldownTimer <= 0)
 		{
-			// add movement 
 			AddMovementInput(ForwardDirection, MovementVector.Y);
 			AddMovementInput(RightDirection, MovementVector.X);
 		}
 	}
+}
+
+void ADeadBatteryCharacter::StartSprinting(const FInputActionValue& Value)
+{
+	IsSprinting = true;
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+}
+
+void ADeadBatteryCharacter::StopSprinting(const FInputActionValue& Value)
+{
+	IsSprinting = false;
+	GetCharacterMovement()->MaxWalkSpeed = 400.f;
 }
 
 void ADeadBatteryCharacter::Look(const FInputActionValue& Value)
@@ -201,36 +220,41 @@ void ADeadBatteryCharacter::Look(const FInputActionValue& Value)
 void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 {
 	FActorSpawnParameters ActorSpawnParams;
-	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	
+	ActorSpawnParams.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	if(CanFire && CurrentEnergyMeter>=EnergyDrainPerShot && IsAiming)
+	if (CanFire && CurrentEnergyMeter >= EnergyDrainPerShot && IsAiming)
 	{
 		CurrentEnergyMeter -= EnergyDrainPerShot;
-		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),FRotator( 0, LaunchDirection.Rotation().Yaw, 0), ActorSpawnParams);
+		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),
+		                                               FRotator(0, LaunchDirection.Rotation().Yaw, 0),
+		                                               ActorSpawnParams);
 		CanFire = false;
 	}
-	
-	if(!IsAiming && MeleeCooldownTimer<=0)
+
+	if (!IsAiming && MeleeCooldownTimer <= 0)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		FHitResult Hit;
 		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-	
-		if (Hit.bBlockingHit){
-			if (Hit.GetActor() != NULL){
+
+		if (Hit.bBlockingHit)
+		{
+			if (Hit.GetActor() != NULL)
+			{
 				LaunchDirection = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
 			}
 		}
 
 		//FRotator From = FRotator( 0,this->GetActorRotation().Yaw,0);
-		FRotator To = FRotator( 0,LaunchDirection.Rotation().Yaw,0);
+		FRotator To = FRotator(0, LaunchDirection.Rotation().Yaw, 0);
 		/*if(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) <150.f)
 			AimRotation = FMath::RInterpTo(From, To, DeltaTime,(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation())*5)/1000);
 		else
 			AimRotation = FMath::RInterpTo(From, To, DeltaTime,10.0);*/
 		this->SetActorRotation(To);
-		
+
 		MeleeCooldownTimer = MeleeCooldownDuration;
 	}
 }
@@ -242,9 +266,11 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 	FHitResult Hit;
 	//Controller->CastToPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 	PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-	
-	if (Hit.bBlockingHit){
-		if (Hit.GetActor() != NULL){
+
+	if (Hit.bBlockingHit)
+	{
+		if (Hit.GetActor() != NULL)
+		{
 			LaunchDirection = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
 		}
 	}
@@ -257,14 +283,15 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 		0));
 	this->SetActorRotation(ActorRotQT.Rotator());*/
 
-	FRotator From = FRotator( 0,this->GetActorRotation().Yaw,0);
-	FRotator To = FRotator( 0,LaunchDirection.Rotation().Yaw,0);
-	if(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) <150.f)
-		AimRotation = FMath::RInterpTo(From, To, DeltaTime,(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation())*5)/1000);
+	FRotator From = FRotator(0, this->GetActorRotation().Yaw, 0);
+	FRotator To = FRotator(0, LaunchDirection.Rotation().Yaw, 0);
+	if (FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) < 150.f)
+		AimRotation = FMath::RInterpTo(From, To, DeltaTime,
+		                               (FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) * 5) / 1000);
 	else
-		AimRotation = FMath::RInterpTo(From, To, DeltaTime,10.0);
+		AimRotation = FMath::RInterpTo(From, To, DeltaTime, 10.0);
 	this->SetActorRotation(AimRotation);
-	
+
 	UE_LOG(LogTemp, Warning, TEXT("DIST: %f"), FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()));
 	IsAiming = true;
 }
@@ -301,7 +328,4 @@ void ADeadBatteryCharacter::EnergyMeterChange(float Change)
 		CurrentEnergyMeter = MaxEnergyMeter;
 
 	//UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
-
 }
-
-

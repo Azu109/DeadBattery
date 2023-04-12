@@ -33,6 +33,10 @@ class ADeadBatteryCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
 
+	/** Sprint Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
+
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
@@ -110,6 +114,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
 	float MeleeCooldownTimer;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+	bool IsSprinting;
 	
 	UFUNCTION()
     	void BloodMeterChange(float Change);
@@ -121,6 +129,12 @@ protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+
+	/** Called for Sprint input */
+	void StartSprinting(const FInputActionValue& Value);
+
+	/** Called for Sprint input */
+	void StopSprinting(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -149,6 +163,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
 };
 
 

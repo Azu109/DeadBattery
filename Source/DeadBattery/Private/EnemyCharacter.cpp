@@ -3,12 +3,17 @@
 
 #include "EnemyCharacter.h"
 
+#include "Components/CapsuleComponent.h"
+#include "DeadBattery/DeadBatteryCharacter.h"
+
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CollisionCompCap = GetCapsuleComponent();
+	CollisionCompCap->SetCapsuleRadius(50.0f);
 }
 
 // Called when the game starts or when spawned
@@ -19,6 +24,7 @@ void AEnemyCharacter::BeginPlay()
 	CanFire = false;
 	//FireRate = 1;
 	FireRateTimer = AnimDuration;
+	CollisionCompCap->OnComponentHit.AddDynamic(this, &AEnemyCharacter::OnHit);
 }
 
 // Called every frame
@@ -43,5 +49,15 @@ void AEnemyCharacter::Tick(float DeltaTime)
 void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AEnemyCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(OtherActor);
+	// Only add impulse and destroy projectile if we hit a physics
+	if (Player != nullptr && EnemyType == EEnemyType::ET_Melee)
+	{
+		Player->BloodMeterChange(-0.10);
+	}
 }
 

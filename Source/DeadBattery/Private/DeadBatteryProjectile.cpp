@@ -50,7 +50,7 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 3.0f, GetActorLocation());
 		//UGameplayStatics::SpawnSoundAtLocation(this, GroundHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.7,1.0),FMath::RandRange(0.5,1.5));
 	}
-	else if (Enemy != nullptr)
+	else if (Enemy != nullptr && ProjectileType==EProjectileType::EP_Player)
 	{
 		EnemyHit = true;
 		//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
@@ -63,7 +63,7 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		}
 		//OtherComp->AddImpulseAtLocation(GetVelocity() * 2.0f, GetActorLocation());
 	}
-	else if (PlayerHit != nullptr)
+	else if (PlayerHit != nullptr && ProjectileType==EProjectileType::EP_Enemy)
 	{
 		PlayerHit->BloodMeterChange(-ProjectileDamage);
 	}

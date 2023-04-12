@@ -33,7 +33,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies")
+	TSubclassOf<class AEnemyCharacter> BasicEnemy;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies")
+	TSubclassOf<class AEnemyCharacter> GhostEnemy;
+	
 private:
 	void SpawnEnemies();
 
@@ -55,11 +60,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawn Control")
 		int Wave = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies", meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<class AEnemyCharacter> BasicEnemy;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies", meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<class AEnemyCharacter> GhostEnemy;
+	
 
 	FTimerHandle SpawnRateTimerHandle;
 

@@ -59,5 +59,12 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	UPROPERTY(VisibleDefaultsOnly)
+	UCapsuleComponent* CollisionCompCap;
+    
+	UFUNCTION()
+		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	UCapsuleComponent* GetCollisionComp() const { return CollisionCompCap; }
 
 };

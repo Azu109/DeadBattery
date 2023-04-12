@@ -35,7 +35,7 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 		{
 			if (EnemyCharacter->EnemyType == EEnemyType::ET_Melee) //Enemy is normal mob
 			{
-				MoveToActor(PlayerCharacter, 40.0f, true); // Move To player Character
+				MoveToActor(PlayerCharacter, -1.0f, false); // Move To player Character
 				FVector PlayerLoc = PlayerCharacter->GetActorLocation();
 				FVector EnemyLoc = EnemyCharacter->GetActorLocation();
 				PlayerLoc.Z = 0;
@@ -87,7 +87,7 @@ void AEnemyAIController::Shoot(AEnemyCharacter* EnemyCharacter, ADeadBatteryChar
 	{
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(EnemyCharacter->ShootingEnemyProjectile,
 		                                               EnemyCharacter->GetMesh()->GetSocketLocation("CannonSocket"),
-		                                               FRotator(0, (Player->GetActorLocation() - this->K2_GetActorLocation()).Rotation().Yaw, 0),
+		                                               FRotator(0, (Player->GetActorLocation() -  EnemyCharacter->GetMesh()->GetSocketLocation("CannonSocket")+1).Rotation().Yaw, 0),
 		                                               ActorSpawnParams);
 		EnemyCharacter->CanFire = false;
 	}

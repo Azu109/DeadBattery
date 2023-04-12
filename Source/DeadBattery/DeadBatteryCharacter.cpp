@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -280,7 +281,7 @@ void ADeadBatteryCharacter::BloodMeterChange(float Change)
 	if (CurrentBloodMeter < 0)
 	{
 		CurrentBloodMeter = 0;
-		
+		UGameplayStatics::OpenLevel(GetWorld(), FName("FactoryLevel")); //Should be game over
 	}
 
 	else if (CurrentBloodMeter > MaxBloodMeter)

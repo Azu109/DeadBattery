@@ -12,6 +12,13 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EProjectileType : uint8 {
+	EP_Player       UMETA(DisplayName="Player Projectile"),
+	EP_Enemy        UMETA(DisplayName="Enemy Projectile"),
+};
+
 UCLASS()
 class DEADBATTERY_API ADeadBatteryProjectile : public AActor
 {
@@ -52,6 +59,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
 	float ProjectileDamage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
+	EProjectileType ProjectileType;
 	
 	/** Returns CollisionComp subobject **/
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }

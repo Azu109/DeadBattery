@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		TArray<AActor*> EnemiesInLevel;
 
+	UPROPERTY(EditAnywhere)
+		TArray <TSubclassOf<class AEnemyCharacter>> EnemiesToSpawn;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,6 +57,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<class AEnemyCharacter> BasicEnemy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies", meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class AEnemyCharacter> GhostEnemy;
 
 	FTimerHandle SpawnRateTimerHandle;
 

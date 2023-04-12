@@ -24,6 +24,9 @@ void ASpawnController::BeginPlay()
 	NumOfSpawnPointsStart = SpawnPoints.Num() / 2;
 
 	GetWorldTimerManager().SetTimer(SpawnRateTimerHandle, this, &ASpawnController::SpawnEnemies, TimeBetweenSpawns, true);		// Call Spawn Enemies every X amount of Seconds
+
+	EnemiesToSpawn.Add(BasicEnemy);
+	EnemiesToSpawn.Add(GhostEnemy);
 	
 }
 
@@ -71,7 +74,8 @@ void ASpawnController::SpawnEnemies()
 	// Randomly spawn between spawn points
 	for (int i = 1; i <= NumOfEnemies; i++) {
 		int RandomSpawner = FMath::RandRange(0, SpawnPoints.Num()-1);
-		GetWorld()->SpawnActor<AEnemyCharacter>(BasicEnemy, SpawnPoints[RandomSpawner]->GetActorLocation(), SpawnPoints[RandomSpawner]->GetActorRotation());
+		int RandomEnemy = FMath::RandRange(0, EnemiesToSpawn.Num()-1);
+		GetWorld()->SpawnActor<AEnemyCharacter>(EnemiesToSpawn[RandomEnemy], SpawnPoints[RandomSpawner]->GetActorLocation(), SpawnPoints[RandomSpawner]->GetActorRotation());
 	}
 	EnemyCountInWave();
 }

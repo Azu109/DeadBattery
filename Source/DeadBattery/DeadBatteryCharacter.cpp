@@ -67,6 +67,7 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	
 	Timer = 0.0f;
 	Score = 0.0f;
+	MeleeCooldownTimer = 0;
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -91,7 +92,7 @@ void ADeadBatteryCharacter::BeginPlay()
 	}
 	FireRateTimer = 1.0f / (FireRate/60.0f);
 	CanFire = true;
-	MeleeCooldownTimer = 0;
+	
 }
 
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
@@ -174,9 +175,12 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+		if(MeleeCooldownTimer <= 0)
+		{
+			// add movement 
+			AddMovementInput(ForwardDirection, MovementVector.Y);
+			AddMovementInput(RightDirection, MovementVector.X);
+		}
 	}
 }
 
@@ -274,7 +278,10 @@ void ADeadBatteryCharacter::BloodMeterChange(float Change)
 	CurrentBloodMeter = CurrentBloodMeter + Change;
 
 	if (CurrentBloodMeter < 0)
+	{
 		CurrentBloodMeter = 0;
+		
+	}
 
 	else if (CurrentBloodMeter > MaxBloodMeter)
 		CurrentBloodMeter = MaxBloodMeter;

@@ -33,6 +33,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool CanFire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsFlinching;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AnimDuration;
@@ -44,6 +47,12 @@ public:
 	float FireRateTimer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float FirstTimeShotTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FlinchAnimDuration;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FlinchTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EEnemyType EnemyType;

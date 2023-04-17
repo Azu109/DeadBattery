@@ -24,6 +24,7 @@ void AEnemyCharacter::BeginPlay()
 	CanFire = false;
 	//FireRate = 1;
 	FireRateTimer = AnimDuration;
+	IsFlinching = false;
 	CollisionCompCap->OnComponentHit.AddDynamic(this, &AEnemyCharacter::OnHit);
 }
 
@@ -41,6 +42,16 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		{
 			FireRateTimer = AnimDuration;
 			CanFire = true;
+		}
+	}
+
+	if(IsFlinching)
+	{
+		FlinchTimer -= DeltaTime;
+		if(FlinchTimer<=0)
+		{
+			FlinchTimer = FlinchAnimDuration;
+			IsFlinching = false;
 		}
 	}
 }

@@ -89,6 +89,8 @@ void AEnemyAIController::Shoot(AEnemyCharacter* EnemyCharacter, ADeadBatteryChar
 		                                               EnemyCharacter->GetMesh()->GetSocketLocation("CannonSocket"),
 		                                               FRotator(0, (Player->GetActorLocation() -  EnemyCharacter->GetMesh()->GetSocketLocation("CannonSocket")+1).Rotation().Yaw, 0),
 		                                               ActorSpawnParams);
+
+		UGameplayStatics::SpawnSoundAtLocation(this, EnemyCharacter->EnemyCannonSFX,this->K2_GetActorLocation());
 		EnemyCharacter->CanFire = false;
 	}
 }

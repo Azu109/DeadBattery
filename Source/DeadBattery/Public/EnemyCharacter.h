@@ -78,6 +78,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
     class USoundBase* DeathExplosionSFX;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* EnemyCannonSFX;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

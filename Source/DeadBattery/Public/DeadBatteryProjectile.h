@@ -62,6 +62,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Projectile)
 	EProjectileType ProjectileType;
 	
+	UPROPERTY(EditAnywhere)
+    class UParticleSystem* ProjectileHitParticleEffect;
+	
 	/** Returns CollisionComp subobject **/
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/

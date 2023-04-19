@@ -44,6 +44,8 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 	bool EnemyHit = false;
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
 	ADeadBatteryCharacter* PlayerHit  = Cast<ADeadBatteryCharacter>(OtherActor);
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ProjectileHitParticleEffect, GetTransform());
 	// Only add impulse and destroy projectile if we hit a physics
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{

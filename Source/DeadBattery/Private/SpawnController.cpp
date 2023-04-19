@@ -75,14 +75,19 @@ void ASpawnController::SpawnEnemies()
 	for (int i = 1; i <= NumOfEnemies; i++) {
 		int RandomSpawner = FMath::RandRange(0, SpawnPoints.Num()-1);
 		int RandomEnemy = FMath::RandRange(0, EnemiesToSpawn.Num()-1);
-		GetWorld()->SpawnActor<AEnemyCharacter>(EnemiesToSpawn[RandomEnemy], SpawnPoints[RandomSpawner]->GetActorLocation(), SpawnPoints[RandomSpawner]->GetActorRotation());
+		AEnemyCharacter* Enemy =  GetWorld()->SpawnActor<AEnemyCharacter>(EnemiesToSpawn[RandomEnemy], SpawnPoints[RandomSpawner]->GetActorLocation(), SpawnPoints[RandomSpawner]->GetActorRotation());
+		Enemy->MaxHealth += 10 * (NumOfEnemies-1); 
+		Enemy->CurrentHealth += 10 * (NumOfEnemies-1); 
 	}
 	EnemyCountInWave();
+	TArray<AActor*> CurrentEnemies;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyCharacter::StaticClass(), CurrentEnemies);
 }
 
 
 // Increase Num of Enemies per wave
 void ASpawnController::EnemyCountInWave() {
-	NumOfEnemies = NumOfEnemies + (NumOfEnemies / 2);
+	//NumOfEnemies = NumOfEnemies + (NumOfEnemies / 2);
+	NumOfEnemies ++;
 }
 

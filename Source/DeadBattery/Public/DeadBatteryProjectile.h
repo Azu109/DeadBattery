@@ -64,6 +64,9 @@ public:
 	
 	UPROPERTY(EditAnywhere)
     class UParticleSystem* ProjectileHitParticleEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* AmmoCollsionSFX;
 	
 	/** Returns CollisionComp subobject **/
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }

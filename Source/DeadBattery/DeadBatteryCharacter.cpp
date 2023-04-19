@@ -100,6 +100,8 @@ void ADeadBatteryCharacter::BeginPlay()
 	CanFire = true;
 
 	CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
+
+	
 }
 
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
@@ -269,6 +271,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 
 void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 {
+	
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
 	FHitResult Hit;

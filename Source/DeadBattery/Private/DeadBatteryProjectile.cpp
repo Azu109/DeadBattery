@@ -41,6 +41,8 @@ void ADeadBatteryProjectile::BeginPlay()
 
 void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+
+	UGameplayStatics::SpawnSoundAtLocation(this, AmmoCollsionSFX,this->K2_GetActorLocation());
 	bool EnemyHit = false;
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
 	ADeadBatteryCharacter* PlayerHit  = Cast<ADeadBatteryCharacter>(OtherActor);

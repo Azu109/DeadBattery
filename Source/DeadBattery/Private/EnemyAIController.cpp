@@ -35,13 +35,20 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 		{
 			if (EnemyCharacter->EnemyType == EEnemyType::ET_Melee) //Enemy is normal mob
 			{
-				MoveToActor(PlayerCharacter, -1.0f, false); // Move To player Character
-				FVector PlayerLoc = PlayerCharacter->GetActorLocation();
-				FVector EnemyLoc = EnemyCharacter->GetActorLocation();
-				PlayerLoc.Z = 0;
-				EnemyLoc.Z = 0;
-				FRotator lookAtRotation = FRotationMatrix::MakeFromX(PlayerLoc - EnemyLoc).Rotator();
-				EnemyCharacter->SetActorRotation(lookAtRotation);
+				if(!EnemyCharacter->IsFlinching)
+				{
+					MoveToActor(PlayerCharacter, -1.0f, false); // Move To player Character
+					FVector PlayerLoc = PlayerCharacter->GetActorLocation();
+					FVector EnemyLoc = EnemyCharacter->GetActorLocation();
+					PlayerLoc.Z = 0;
+					EnemyLoc.Z = 0;
+					FRotator lookAtRotation = FRotationMatrix::MakeFromX(PlayerLoc - EnemyLoc).Rotator();
+					EnemyCharacter->SetActorRotation(lookAtRotation);
+				}
+				else
+				{
+					StopMovement();
+				}
 			}
 			else if (EnemyCharacter->EnemyType == EEnemyType::ET_Shooting)
 			{

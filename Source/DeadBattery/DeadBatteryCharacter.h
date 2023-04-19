@@ -115,9 +115,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attacking)
 	float MeleeCooldownTimer;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 	bool IsSprinting;
+
+	
+	//Audio
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* CannonFireSFX;
+
 	
 	UFUNCTION()
     	void BloodMeterChange(float Change);

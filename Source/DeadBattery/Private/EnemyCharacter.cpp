@@ -5,6 +5,7 @@
 
 #include "Components/CapsuleComponent.h"
 #include "DeadBattery/DeadBatteryCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
@@ -29,6 +30,8 @@ void AEnemyCharacter::BeginPlay()
 	
 	IsMeleeAttacking = false;
 	MeleeAttackTimer = MeleeAttackDuration;
+
+	FlinchTimer = FlinchAnimDuration;
 	
 	CollisionCompCap->OnComponentHit.AddDynamic(this, &AEnemyCharacter::OnHit);
 }
@@ -38,7 +41,13 @@ void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if(CurrentHealth<=0)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(this, DeathExplosionSFX,this->K2_GetActorLocation());
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathParticleEffect, GetTransform());
 		Destroy();
+		
+		
+	}
 
 	if(!CanFire)
 	{

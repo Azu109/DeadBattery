@@ -69,9 +69,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DistanceToPlayerBeforeShooting;
 
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* DeathParticleEffect;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ADeadBatteryProjectile> ShootingEnemyProjectile;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+    class USoundBase* DeathExplosionSFX;
+
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

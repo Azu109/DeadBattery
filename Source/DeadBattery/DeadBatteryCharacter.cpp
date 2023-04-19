@@ -230,6 +230,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),
 		                                               FRotator(0, LaunchDirection.Rotation().Yaw, 0),
 		                                               ActorSpawnParams);
+		UGameplayStatics::SpawnSoundAtLocation(this, CannonFireSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.4,0.6),FMath::RandRange(0.9,1.1));
 		CanFire = false;
 	}
 

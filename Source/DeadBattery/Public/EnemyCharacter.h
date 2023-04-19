@@ -56,6 +56,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EEnemyType EnemyType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MeleeAttackDuration;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float MeleeAttackTimer;
+    	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool IsMeleeAttacking;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DistanceToPlayerBeforeShooting;

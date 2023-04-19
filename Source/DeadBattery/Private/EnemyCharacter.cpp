@@ -14,6 +14,7 @@ AEnemyCharacter::AEnemyCharacter()
 
 	CollisionCompCap = GetCapsuleComponent();
 	CollisionCompCap->SetCapsuleRadius(50.0f);
+	
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +26,10 @@ void AEnemyCharacter::BeginPlay()
 	//FireRate = 1;
 	FireRateTimer = AnimDuration;
 	IsFlinching = false;
+	
+	IsMeleeAttacking = false;
+	MeleeAttackTimer = MeleeAttackDuration;
+	
 	CollisionCompCap->OnComponentHit.AddDynamic(this, &AEnemyCharacter::OnHit);
 }
 
@@ -54,6 +59,16 @@ void AEnemyCharacter::Tick(float DeltaTime)
 			IsFlinching = false;
 		}
 	}
+
+	if(IsMeleeAttacking)
+	{
+		MeleeAttackTimer -= DeltaTime;
+		if(MeleeAttackTimer<=0)
+		{
+			MeleeAttackTimer = MeleeAttackDuration;
+			IsMeleeAttacking = false;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -69,6 +84,7 @@ void AEnemyCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	if (Player != nullptr && EnemyType == EEnemyType::ET_Melee)
 	{
 		Player->BloodMeterChange(-0.10);
+		IsMeleeAttacking = true;
 	}
 }
 

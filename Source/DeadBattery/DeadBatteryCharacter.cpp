@@ -62,6 +62,9 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);*/
 
+	CollisionCompCap = GetCapsuleComponent();
+	CollisionCompCap->SetCapsuleRadius(50.0f);
+	
 	LaunchDirection = FVector(0, 0, 0);
 	IsAiming = false;
 	CurrentBloodMeter = MaxBloodMeter;
@@ -95,6 +98,8 @@ void ADeadBatteryCharacter::BeginPlay()
 	}
 	FireRateTimer = 1.0f / (FireRate / 60.0f);
 	CanFire = true;
+
+	CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
 }
 
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
@@ -121,6 +126,8 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 	if (MeleeCooldownTimer > 0)
 		MeleeCooldownTimer -= DeltaSeconds;
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -329,4 +336,16 @@ void ADeadBatteryCharacter::EnergyMeterChange(float Change)
 		CurrentEnergyMeter = MaxEnergyMeter;
 
 	//UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
+}
+
+void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Warning, TEXT("PLAYER HITTING!!!"));
+	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
+	// Only add impulse and destroy projectile if we hit a physics
+	if (Enemy != nullptr && MeleeCooldownTimer>0)
+	{
+		Enemy->CurrentHealth = -10;
+	}
 }

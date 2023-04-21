@@ -49,12 +49,23 @@ class ADeadBatteryCharacter : public ACharacter
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     class UInputAction* AimAction;
 
+	/** Shield Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+		class UInputAction* ShieldAction;
+
 	
 public:
 	ADeadBatteryCharacter();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ADeadBatteryProjectile> CannonProjectile;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AActor> PlayerShield;
+
+	AActor* shield;
+
+	bool ShieldSpawned;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
 	float MaxBloodMeter;
@@ -80,6 +91,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	float BloodMeterGainOnKill;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	float ShieldDrainRate;
 	
 
 	float FireRateTimer;
@@ -118,7 +132,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 	bool IsSprinting;
 
-	
+
 	//Audio
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
@@ -153,7 +167,12 @@ protected:
 
 	/** Called for stop aiming input */ 
 	void StopAiming(const FInputActionValue& Value);
-			
+
+	/** Called for Shield input */
+	void StartShield(const FInputActionValue& Value);
+	
+	/** Called for Shield input */
+	void StopShield(const FInputActionValue& Value);
 
 protected:
 	// APawn interface

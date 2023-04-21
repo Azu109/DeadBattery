@@ -73,6 +73,9 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	Timer = 0.0f;
 	Score = 0.0f;
 	MeleeCooldownTimer = 0;
+
+	ShieldSpawned = false;
+	shield = NULL;
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -101,6 +104,7 @@ void ADeadBatteryCharacter::BeginPlay()
 
 	CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
 
+	
 	
 }
 
@@ -162,6 +166,10 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 		                                   &ADeadBatteryCharacter::StartSprinting);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this,
 		                                   &ADeadBatteryCharacter::StopSprinting);
+
+		//Shield
+		EnhancedInputComponent->BindAction(ShieldAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::StartShield);
+		EnhancedInputComponent->BindAction(ShieldAction, ETriggerEvent::Completed, this, &ADeadBatteryCharacter::StopShield);
 	}
 }
 
@@ -310,6 +318,29 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 {
 	IsAiming = false;
+}
+
+void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
+{
+	if (!ShieldSpawned)
+	{
+		FVector SpineSocketLoc = GetMesh()->GetSocketLocation("ShieldSocket");
+		shield = GetWorld()->SpawnActor<AActor>(PlayerShield, SpineSocketLoc, FRotator(0));
+		FAttachmentTransformRules a = FAttachmentTransformRules::SnapToTargetIncludingScale;
+		a.RotationRule = EAttachmentRule::KeepRelative;
+		shield->AttachToComponent(GetMesh(), a, "ShieldSocket");
+		ShieldSpawned = true;
+	}
+	if (CurrentEnergyMeter <= 0) {
+		StopShield(Value);
+	}
+	EnergyMeterChange(-ShieldDrainRate);
+}
+
+void ADeadBatteryCharacter::StopShield(const FInputActionValue& Value)
+{
+	shield->Destroy();
+	ShieldSpawned = false;
 }
 
 void ADeadBatteryCharacter::BloodMeterChange(float Change)

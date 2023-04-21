@@ -241,7 +241,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
-	if (CanFire && CurrentEnergyMeter >= EnergyDrainPerShot && IsAiming)
+	if (CanFire && CurrentEnergyMeter >= EnergyDrainPerShot && IsAiming && !ShieldSpawned)
 	{
 		CurrentEnergyMeter -= EnergyDrainPerShot;
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),
@@ -251,7 +251,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		CanFire = false;
 	}
 
-	if (!IsAiming && MeleeCooldownTimer <= 0)
+	if (!IsAiming && MeleeCooldownTimer <= 0 && !ShieldSpawned)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		FHitResult Hit;
@@ -320,6 +320,8 @@ void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 	IsAiming = false;
 }
 
+
+// Enables Shield on Keypress and reduces Energy
 void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 {
 	if (!ShieldSpawned)
@@ -327,7 +329,7 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 		FVector SpineSocketLoc = GetMesh()->GetSocketLocation("ShieldSocket");
 		shield = GetWorld()->SpawnActor<AActor>(PlayerShield, SpineSocketLoc, FRotator(0));
 		FAttachmentTransformRules a = FAttachmentTransformRules::SnapToTargetIncludingScale;
-		a.RotationRule = EAttachmentRule::KeepRelative;
+		a.RotationRule = EAttachmentRule::KeepWorld;
 		shield->AttachToComponent(GetMesh(), a, "ShieldSocket");
 		ShieldSpawned = true;
 	}
@@ -337,6 +339,7 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 	EnergyMeterChange(-ShieldDrainRate);
 }
 
+// Destroy Shield when player releases button
 void ADeadBatteryCharacter::StopShield(const FInputActionValue& Value)
 {
 	shield->Destroy();

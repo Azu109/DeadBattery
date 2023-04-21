@@ -69,5 +69,6 @@ void ASunSpot::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 void ASunSpot::PlayerUnderSun(ADeadBatteryCharacter* PlayerCharacter)
 {
 	PlayerCharacter->BloodMeterChange(-BloodLoss);
-	PlayerCharacter->EnergyMeterChange(EnergyGain);
+	if (!PlayerCharacter->ShieldSpawned)
+		PlayerCharacter->EnergyMeterChange(EnergyGain);
 }

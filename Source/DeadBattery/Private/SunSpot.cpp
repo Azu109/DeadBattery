@@ -2,8 +2,11 @@
 
 
 #include "SunSpot.h"
+
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "DeadBattery/DeadBatteryCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASunSpot::ASunSpot()
@@ -62,6 +65,12 @@ void ASunSpot::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap End");
 	if (ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(OtherActor))
 	{
+		if(PlayerCharacter->IsUnderSun != false)
+			UGameplayStatics::SpawnSoundAtLocation(this, PowerDownSFX,this->K2_GetActorLocation(),this->GetActorRotation());
+
+		if(PowerUpAudioComponent !=nullptr)
+			PowerUpAudioComponent->Stop();
+		
 		PlayerCharacter->IsUnderSun = false;
 		GetWorldTimerManager().ClearTimer(UnderSunTimerHandle);
 	}
@@ -69,6 +78,9 @@ void ASunSpot::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 
 void ASunSpot::PlayerUnderSun(ADeadBatteryCharacter* PlayerCharacter)
 {
+	if(!PlayerCharacter->IsUnderSun)
+		PowerUpAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, PowerUpSFX,this->K2_GetActorLocation(),this->GetActorRotation());
+	
 	PlayerCharacter->IsUnderSun = true;
 	PlayerCharacter->BloodMeterChange(-BloodLoss);
 	PlayerCharacter->EnergyMeterChange(EnergyGain);

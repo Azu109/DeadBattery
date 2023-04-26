@@ -76,7 +76,7 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 	MeleeCooldownTimer = 0;
 
 	ShieldSpawned = false;
-	shield = NULL;
+	Shield = NULL;
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -246,9 +246,14 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	{
 		CurrentEnergyMeter -= EnergyDrainPerShot;
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),
-		                                               FRotator(0, LaunchDirection.Rotation().Yaw, 0),
+		                                               FRotator(0, GetActorRotation().Yaw+6, 0),
 		                                               ActorSpawnParams);
+
+		//UE_LOG(LogTemp, Warning, TEXT("Rotation Needed: %f %f %f"),  this->GetActorRotation().Pitch,this->GetActorRotation().Yaw,this->GetActorRotation().Roll);
+		//UE_LOG(LogTemp, Warning, TEXT("Rotation Got: %f %f %f"), GetMesh()->GetSocketRotation("CannonSocket").Pitch,GetMesh()->GetSocketRotation("CannonSocket").Yaw,GetMesh()->GetSocketRotation("CannonSocket").Roll);
+		
 		UGameplayStatics::SpawnSoundAtLocation(this, CannonFireSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.4,0.6),FMath::RandRange(0.9,1.1));
+		
 		CanFire = false;
 	}
 
@@ -312,15 +317,19 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 		AimRotation = FMath::RInterpTo(From, To, DeltaTime, 10.0);
 	this->SetActorRotation(AimRotation);
 
-	UE_LOG(LogTemp, Warning, TEXT("DIST: %f"), FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()));
-	IsAiming = true;
+	//UE_LOG(LogTemp, Warning, TEXT("DIST: %f"), FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()));
 
-	
+	if (!IsAiming)
+		AimGuide = GetWorld()->SpawnActor<AActor>(AimGuideClass, Hit.ImpactPoint, FRotator(0));
+	if(AimGuide!=nullptr)
+		AimGuide->SetActorLocation(Hit.ImpactPoint);
+	IsAiming = true;
 }
 
 void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 {
 	IsAiming = false;
+	AimGuide->Destroy();
 }
 
 
@@ -329,16 +338,7 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 {
 	if(IsUnderSun)
 	{
-		if(shield!=nullptr)
-		shield->Destroy();
-		
-		ShieldSpawned = false;
-		
-		if(ShieldAudioComponent != nullptr)
-			if(ShieldAudioComponent->IsPlaying())
-			{
-				ShieldAudioComponent->Stop();
-			}
+		StopShield(Value);
 		return;
 	}
 	
@@ -346,10 +346,10 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 	{
 		ShieldAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, ShieldSFX,this->K2_GetActorLocation(),this->GetActorRotation());
 		FVector SpineSocketLoc = GetMesh()->GetSocketLocation("ShieldSocket");
-		shield = GetWorld()->SpawnActor<AActor>(PlayerShield, SpineSocketLoc, FRotator(0));
+		Shield = GetWorld()->SpawnActor<AActor>(PlayerShield, SpineSocketLoc, FRotator(0));
 		FAttachmentTransformRules a = FAttachmentTransformRules::SnapToTargetIncludingScale;
 		a.RotationRule = EAttachmentRule::KeepWorld;
-		shield->AttachToComponent(GetMesh(), a, "ShieldSocket");
+		Shield->AttachToComponent(GetMesh(), a, "ShieldSocket");
 		ShieldSpawned = true;
 	}
 	if (CurrentEnergyMeter <= 0) {
@@ -361,10 +361,16 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 // Destroy Shield when player releases button
 void ADeadBatteryCharacter::StopShield(const FInputActionValue& Value)
 {
-	if(ShieldAudioComponent->IsPlaying())
-		ShieldAudioComponent->Stop();
-	shield->Destroy();
+	if(Shield!=nullptr)
+		Shield->Destroy();
+		
 	ShieldSpawned = false;
+		
+	if(ShieldAudioComponent != nullptr)
+		if(ShieldAudioComponent->IsPlaying())
+		{
+			ShieldAudioComponent->Stop();
+		}
 }
 
 void ADeadBatteryCharacter::BloodMeterChange(float Change)

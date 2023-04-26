@@ -64,7 +64,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class AActor> PlayerShield;
 
-	AActor* shield;
+	AActor* Shield;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AActor> AimGuideClass;
+	
+	AActor* AimGuide;
 
 	bool ShieldSpawned;
 

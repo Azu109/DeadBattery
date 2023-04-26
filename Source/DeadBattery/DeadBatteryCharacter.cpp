@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "MainSaveGame.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -105,6 +106,8 @@ void ADeadBatteryCharacter::BeginPlay()
 
 	CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
 	IsUnderSun = false;
+
+	LoadGame();
 }
 
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
@@ -131,8 +134,6 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 	if (MeleeCooldownTimer > 0)
 		MeleeCooldownTimer -= DeltaSeconds;
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -410,5 +411,42 @@ void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAct
 	if (Enemy != nullptr && MeleeCooldownTimer>0)
 	{
 		Enemy->CurrentHealth = -10;
+	}
+}
+
+void ADeadBatteryCharacter::LoadGame()
+{
+	UMainSaveGame* SaveGameInstance = Cast<UMainSaveGame>(UGameplayStatics::CreateSaveGameObject(UMainSaveGame::StaticClass()));
+
+	if(UGameplayStatics::DoesSaveGameExist(TEXT("DeadBatterySave"),0) == false)
+	{
+		UGameplayStatics::CreateSaveGameObject(TSubclassOf<UMainSaveGame>());
+	}
+	else
+	{
+		SaveGameInstance = Cast<UMainSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("DeadBatterySave"),0));
+	}
+
+	HighScore = SaveGameInstance->HighScore;
+}
+
+void ADeadBatteryCharacter::SaveGame()
+{
+	UMainSaveGame* SaveGameInstance = Cast<UMainSaveGame>(UGameplayStatics::CreateSaveGameObject(UMainSaveGame::StaticClass()));
+	
+	if(Score > HighScore)
+		HighScore = Score;
+	
+	SaveGameInstance->HighScore = HighScore;
+	SaveGameInstance->LastScore = Score;
+	
+	if(UGameplayStatics::DoesSaveGameExist(TEXT("DeadBatterySave"),0) == false)
+	{
+		UGameplayStatics::CreateSaveGameObject(TSubclassOf<UMainSaveGame>());
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("DeadBatterySave"),0);
+	}
+	else
+	{
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("DeadBatterySave"),0);
 	}
 }

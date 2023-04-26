@@ -114,6 +114,8 @@ public:
 	double Score;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	double Timer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	double HighScore;
 	
 	FRotator AimRotation;
 
@@ -188,8 +190,7 @@ protected:
 	
 	/** Called for Shield input */
 	void StopShield(const FInputActionValue& Value);
-
-protected:
+	
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
@@ -213,6 +214,11 @@ public:
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UCapsuleComponent* GetCollisionComp() const { return CollisionCompCap; }
+
+	/** Loads Game */
+	void LoadGame();
+	/** Saves Game */
+	void SaveGame();
 	
 };
 

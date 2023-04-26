@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DeadBattery/DeadBatteryCharacter.h"
 #include "GameFramework/Actor.h"
 #include "SunSpot.generated.h"
 

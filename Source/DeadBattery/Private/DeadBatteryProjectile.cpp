@@ -58,15 +58,18 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 	{
 		EnemyHit = true;
 		//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
-		Enemy->CurrentHealth -=  ProjectileDamage;
+		
+		float EnemyHealth = Enemy->CurrentHealth;
+		EnemyHealth -=  ProjectileDamage;
 		Enemy->IsFlinching = true;
 		Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
-		if(Enemy->CurrentHealth<=0)
+		if(EnemyHealth<=0)
 		{
 			ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 			Player->BloodMeterChange(Enemy->MaxHealth/2.5f);
 			Player->Score += Player->Timer/60.f +1.f;
 		}
+		 Enemy->CurrentHealth = EnemyHealth;
 		//OtherComp->AddImpulseAtLocation(GetVelocity() * 2.0f, GetActorLocation());
 	}
 	else if (PlayerHit != nullptr && ProjectileType==EProjectileType::EP_Enemy)

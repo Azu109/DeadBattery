@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -61,7 +62,7 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);*/
-
+	
 	CollisionCompCap = GetCapsuleComponent();
 	CollisionCompCap->SetCapsuleRadius(50.0f);
 	
@@ -103,9 +104,7 @@ void ADeadBatteryCharacter::BeginPlay()
 	CanFire = true;
 
 	CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
-
-	
-	
+	IsUnderSun = false;
 }
 
 void ADeadBatteryCharacter::Tick(float DeltaSeconds)
@@ -240,6 +239,8 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	ActorSpawnParams.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
+	
+	
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
 	if (CanFire && CurrentEnergyMeter >= EnergyDrainPerShot && IsAiming && !ShieldSpawned)
 	{
@@ -313,6 +314,8 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 
 	UE_LOG(LogTemp, Warning, TEXT("DIST: %f"), FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()));
 	IsAiming = true;
+
+	
 }
 
 void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
@@ -324,8 +327,24 @@ void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 // Enables Shield on Keypress and reduces Energy
 void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 {
+	if(IsUnderSun)
+	{
+		if(shield!=nullptr)
+		shield->Destroy();
+		
+		ShieldSpawned = false;
+		
+		if(ShieldAudioComponent != nullptr)
+			if(ShieldAudioComponent->IsPlaying())
+			{
+				ShieldAudioComponent->Stop();
+			}
+		return;
+	}
+	
 	if (!ShieldSpawned)
 	{
+		ShieldAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, ShieldSFX,this->K2_GetActorLocation(),this->GetActorRotation());
 		FVector SpineSocketLoc = GetMesh()->GetSocketLocation("ShieldSocket");
 		shield = GetWorld()->SpawnActor<AActor>(PlayerShield, SpineSocketLoc, FRotator(0));
 		FAttachmentTransformRules a = FAttachmentTransformRules::SnapToTargetIncludingScale;
@@ -342,6 +361,8 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 // Destroy Shield when player releases button
 void ADeadBatteryCharacter::StopShield(const FInputActionValue& Value)
 {
+	if(ShieldAudioComponent->IsPlaying())
+		ShieldAudioComponent->Stop();
 	shield->Destroy();
 	ShieldSpawned = false;
 }
@@ -358,7 +379,6 @@ void ADeadBatteryCharacter::BloodMeterChange(float Change)
 
 	else if (CurrentBloodMeter > MaxBloodMeter)
 		CurrentBloodMeter = MaxBloodMeter;
-
 	//UE_LOG(LogTemp, Warning, TEXT("Blood: %f"), CurrentBloodMeter);
 }
 

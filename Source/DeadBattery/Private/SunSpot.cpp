@@ -47,7 +47,7 @@ void ASunSpot::Tick(float DeltaTime)
 
 void ASunSpot::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap Begin");
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap Begin");
 
 	if (ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(OtherActor))
 	{
@@ -59,16 +59,17 @@ void ASunSpot::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
 
 void ASunSpot::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap End");
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap End");
 	if (ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(OtherActor))
 	{
+		PlayerCharacter->IsUnderSun = false;
 		GetWorldTimerManager().ClearTimer(UnderSunTimerHandle);
 	}
 }
 
 void ASunSpot::PlayerUnderSun(ADeadBatteryCharacter* PlayerCharacter)
 {
+	PlayerCharacter->IsUnderSun = true;
 	PlayerCharacter->BloodMeterChange(-BloodLoss);
-	if (!PlayerCharacter->ShieldSpawned)
-		PlayerCharacter->EnergyMeterChange(EnergyGain);
+	PlayerCharacter->EnergyMeterChange(EnergyGain);
 }

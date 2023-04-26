@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Components/SphereComponent.h"
 #include "DeadBatteryCharacter.generated.h"
 
 
@@ -102,6 +103,8 @@ public:
 
 	bool CanFire;
 
+	bool IsUnderSun;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	double Score;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
@@ -132,11 +135,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 	bool IsSprinting;
 
+	
+
 
 	//Audio
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	class USoundBase* CannonFireSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* ShieldSFX;
+
+	UAudioComponent* ShieldAudioComponent;
 
 	
 	UFUNCTION()

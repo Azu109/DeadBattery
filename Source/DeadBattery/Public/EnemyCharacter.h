@@ -69,6 +69,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DistanceToPlayerBeforeShooting;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaximumDistanceToShoot;
+
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* DeathParticleEffect;
 

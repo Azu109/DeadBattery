@@ -60,9 +60,16 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 				EnemyCharacter->SetActorRotation(lookAtRotation);
 				if (FVector::Dist(PlayerLoc, EnemyLoc) > EnemyCharacter->DistanceToPlayerBeforeShooting)
 				{
-					MoveToActor(PlayerCharacter, 40.0f, true);
-					EnemyCharacter->InRange = false;
-					EnemyCharacter->FireRateTimer = EnemyCharacter->FirstTimeShotTimer;
+					if (FVector::Dist(PlayerLoc, EnemyLoc) <= EnemyCharacter->MaximumDistanceToShoot && EnemyCharacter->InRange)
+					{
+						//StopMovement();
+						Shoot(EnemyCharacter, PlayerCharacter);
+					}
+					else {
+						MoveToActor(PlayerCharacter, 40.0f, true);
+						EnemyCharacter->InRange = false;
+						EnemyCharacter->FireRateTimer = EnemyCharacter->FirstTimeShotTimer;
+					}
 				}
 				else
 				{

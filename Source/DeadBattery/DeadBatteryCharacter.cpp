@@ -422,19 +422,19 @@ void ADeadBatteryCharacter::EnergyMeterChange(float Change)
 	//UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
 }
 
-/*
+
 void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("PLAYER HITTING!!!"));
+	/*UE_LOG(LogTemp, Warning, TEXT("PLAYER HITTING!!!"));
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics
 	if (Enemy != nullptr && MeleeCooldownTimer>0)
 	{
 		Enemy->CurrentHealth = -10;
-	}
+	}*/
 }
-*/
+
 
 void ADeadBatteryCharacter::LoadGame()
 {

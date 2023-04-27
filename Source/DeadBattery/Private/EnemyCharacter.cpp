@@ -15,7 +15,7 @@ AEnemyCharacter::AEnemyCharacter()
 
 	CollisionCompCap = GetCapsuleComponent();
 	CollisionCompCap->SetCapsuleRadius(50.0f);
-	
+	IsDead = false;
 }
 
 // Called when the game starts or when spawned
@@ -42,11 +42,17 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(CurrentHealth<=0)
 	{
+		IsDead = true;
+	}
+
+	if(IsDead)
+		DeathAnimDuration -= DeltaTime;
+
+	if(IsDead && DeathAnimDuration <=0)
+	{
 		UGameplayStatics::SpawnSoundAtLocation(this, DeathExplosionSFX,this->K2_GetActorLocation());
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DeathParticleEffect, GetTransform());
 		Destroy();
-		
-		
 	}
 
 	if(!CanFire)

@@ -76,8 +76,11 @@ void ASpawnController::SpawnEnemies()
 		int RandomSpawner = FMath::RandRange(0, SpawnPoints.Num()-1);
 		int RandomEnemy = FMath::RandRange(0, EnemiesToSpawn.Num()-1);
 		AEnemyCharacter* Enemy =  GetWorld()->SpawnActor<AEnemyCharacter>(EnemiesToSpawn[RandomEnemy], SpawnPoints[RandomSpawner]->GetActorLocation(), SpawnPoints[RandomSpawner]->GetActorRotation());
-		Enemy->MaxHealth += 10 * (NumOfEnemies-1); 
-		Enemy->CurrentHealth += 10 * (NumOfEnemies-1); 
+		if(Enemy != nullptr)
+		{
+			Enemy->MaxHealth += 10 * (NumOfEnemies-1); 
+			Enemy->CurrentHealth += 10 * (NumOfEnemies-1);
+		} 
 	}
 	EnemyCountInWave();
 	TArray<AActor*> CurrentEnemies;

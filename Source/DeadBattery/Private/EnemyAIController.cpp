@@ -35,7 +35,7 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 		{
 			if (EnemyCharacter->EnemyType == EEnemyType::ET_Melee) //Enemy is normal mob
 			{
-				if(!EnemyCharacter->IsFlinching)
+				if(!EnemyCharacter->IsFlinching && !EnemyCharacter->IsDead)
 				{
 					MoveToActor(PlayerCharacter, -1.0f, false); // Move To player Character
 					FVector PlayerLoc = PlayerCharacter->GetActorLocation();

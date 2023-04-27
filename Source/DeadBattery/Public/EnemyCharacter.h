@@ -44,6 +44,12 @@ public:
 	bool InRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DeathAnimDuration;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsDead;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float FireRateTimer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float FirstTimeShotTimer;

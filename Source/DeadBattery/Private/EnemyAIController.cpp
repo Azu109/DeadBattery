@@ -50,7 +50,7 @@ void AEnemyAIController::Tick(float DeltaSeconds)
 					StopMovement();
 				}
 			}
-			else if (EnemyCharacter->EnemyType == EEnemyType::ET_Shooting)
+			else if (EnemyCharacter->EnemyType == EEnemyType::ET_Shooting && !EnemyCharacter->IsDead)
 			{
 				FVector PlayerLoc = PlayerCharacter->GetActorLocation();
 				FVector EnemyLoc = EnemyCharacter->GetActorLocation();

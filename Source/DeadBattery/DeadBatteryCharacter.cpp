@@ -104,7 +104,7 @@ void ADeadBatteryCharacter::BeginPlay()
 	FireRateTimer = 1.0f / (FireRate / 60.0f);
 	CanFire = true;
 
-	CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
+	//CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
 	IsUnderSun = false;
 
 	LoadGame();
@@ -287,6 +287,19 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 			AimRotation = FMath::RInterpTo(From, To, DeltaTime,10.0);*/
 		this->SetActorRotation(To);
 
+		// Basic Line Trace Detection for Melee (TEST)
+		FHitResult HitObject;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+		GetWorld()->LineTraceSingleByChannel(HitObject, GetMesh()->GetSocketLocation("MeleeStartSocket"), GetMesh()->GetSocketLocation("MeleeEndSocket"), ECollisionChannel::ECC_Camera, Params, FCollisionResponseParams());
+		if (AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(HitObject.GetActor())) {
+			Enemy->CurrentHealth = -10;
+			UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
+		}
+		DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"), GetMesh()->GetSocketLocation("MeleeEndSocket"), FColor::Red, false, 5.0f);
+
+
+
 		MeleeCooldownTimer = MeleeCooldownDuration;
 	}
 }
@@ -409,6 +422,7 @@ void ADeadBatteryCharacter::EnergyMeterChange(float Change)
 	//UE_LOG(LogTemp, Warning, TEXT("Energy: %f"), CurrentEnergyMeter);
 }
 
+/*
 void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -420,6 +434,7 @@ void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAct
 		Enemy->CurrentHealth = -10;
 	}
 }
+*/
 
 void ADeadBatteryCharacter::LoadGame()
 {

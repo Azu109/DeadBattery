@@ -292,8 +292,22 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);
 		GetWorld()->LineTraceSingleByChannel(HitObject, GetMesh()->GetSocketLocation("MeleeStartSocket"), GetMesh()->GetSocketLocation("MeleeEndSocket"), ECollisionChannel::ECC_Camera, Params, FCollisionResponseParams());
+
 		if (AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(HitObject.GetActor())) {
-			Enemy->CurrentHealth = -10;
+			//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
+
+			float EnemyHealth = Enemy->CurrentHealth;
+			EnemyHealth -= 10.0f;
+			Enemy->IsFlinching = true;
+			Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
+			if (EnemyHealth <= 0)
+			{
+				ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+				Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
+				Player->Score += Player->Timer / 60.f + 1.f;
+				Player->SaveGame();
+			}
+			Enemy->CurrentHealth = EnemyHealth;
 			UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
 		}
 		DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"), GetMesh()->GetSocketLocation("MeleeEndSocket"), FColor::Red, false, 5.0f);

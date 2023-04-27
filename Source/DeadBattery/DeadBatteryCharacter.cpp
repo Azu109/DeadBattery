@@ -149,6 +149,7 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ADeadBatteryCharacter::StopMoving);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Look);
@@ -173,6 +174,10 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	}
 }
 
+void ADeadBatteryCharacter::StopMoving(const FInputActionValue& Value)
+{
+	StrafingValue = 0;
+}
 void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -185,14 +190,14 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 		// find out which way is forward
 		//if(!IsAiming)
 		//{
-		Rotation = Controller->GetControlRotation();
-		YawRotation = FRotator(0, Rotation.Yaw, 0);
-		/*}
-		else
-		{
-			Rotation = AimRotation;
-			YawRotation= FRotator(0, Rotation.Yaw, 0);
-		}*/
+			Rotation = Controller->GetControlRotation();
+			YawRotation = FRotator(0, Rotation.Yaw, 0);
+		//}
+		//else
+		//{
+		//	Rotation = AimRotation;
+		//	YawRotation= FRotator(0, Rotation.Yaw, 0);
+		//}
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
@@ -200,11 +205,13 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-
+		
 		if (MeleeCooldownTimer <= 0)
 		{
 			AddMovementInput(ForwardDirection, MovementVector.Y);
 			AddMovementInput(RightDirection, MovementVector.X);
+			
+			StrafingValue = MovementVector.X;
 		}
 	}
 }

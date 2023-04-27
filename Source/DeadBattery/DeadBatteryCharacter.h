@@ -142,7 +142,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 	bool IsSprinting;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+	float StrafingValue;
 
 
 	//Audio
@@ -166,6 +167,9 @@ protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+
+	/** Called for movement input */
+	void StopMoving(const FInputActionValue& Value);
 
 	/** Called for Sprint input */
 	void StartSprinting(const FInputActionValue& Value);

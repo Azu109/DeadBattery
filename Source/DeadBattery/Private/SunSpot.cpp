@@ -25,7 +25,7 @@ ASunSpot::ASunSpot()
 
 	RootComponent = CapsuleComp;
 
-	
+	isEnabled = true;
 
 }
 

@@ -415,7 +415,7 @@ void ADeadBatteryCharacter::BloodMeterChange(float Change)
 	if (CurrentBloodMeter < 0)
 	{
 		CurrentBloodMeter = 0;
-		UGameplayStatics::OpenLevel(GetWorld(), FName("FactoryLevel")); //Should be game over
+		UGameplayStatics::OpenLevel(GetWorld(), FName("GameOverLevel")); //Should be game over
 	}
 
 	else if (CurrentBloodMeter > MaxBloodMeter)

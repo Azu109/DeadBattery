@@ -24,6 +24,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	bool isEnabled;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	class USoundBase* PowerUpSFX;
 
@@ -32,9 +35,19 @@ public:
 
 	UAudioComponent* PowerUpAudioComponent;
 
-private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = "true"))
-		class UCapsuleComponent* CapsuleComp;
+	class USpotLightComponent* SpotLightComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Component", meta = (AllowPrivateAccess = "true"))
+	class UCapsuleComponent* CapsuleComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,  Category = "Effect")
+	float SunSpotTimer = 10.0f;
+
+private:
+
+
+
 
 	UPROPERTY(EditAnywhere, Category = "Effect")
 		float BloodLoss = 5.0f;
@@ -42,8 +55,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Effect")
 		float EnergyGain = 5.0f;
 
+	
+	
 	UPROPERTY(EditAnywhere, Category = "Effect")
-		float TimeInterval = 5.0f;
+	float TimeInterval = 5.0f;
+
+	
 
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

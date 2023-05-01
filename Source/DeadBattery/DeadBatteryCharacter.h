@@ -156,6 +156,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	class USoundBase* ShieldSFX;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* MeleeSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* NoBulletSFX;
+
 	UAudioComponent* ShieldAudioComponent;
 
 	

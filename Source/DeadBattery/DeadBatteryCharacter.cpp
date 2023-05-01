@@ -104,7 +104,7 @@ void ADeadBatteryCharacter::BeginPlay()
 	FireRateTimer = 1.0f / (FireRate / 60.0f);
 	CanFire = true;
 
-	//CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
+	CollisionCompCap->OnComponentHit.AddDynamic(this, &ADeadBatteryCharacter::OnHit);
 	IsUnderSun = false;
 
 	LoadGame();
@@ -294,13 +294,22 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 
 		CanFire = false;
 	}
-
-	if (!IsAiming && MeleeCooldownTimer <= 0 && !ShieldSpawned)
+	else if(CanFire && CurrentEnergyMeter < EnergyDrainPerShot)
 	{
+		UGameplayStatics::SpawnSoundAtLocation(this, NoBulletSFX, this->K2_GetActorLocation(),
+											   this->GetActorRotation());
+		CanFire = false;
+	}
+	
+	if (!IsAiming && MeleeCooldownTimer <= 0 && !ShieldSpawned && CurrentEnergyMeter >= 2 * EnergyDrainPerShot)
+	{
+		CurrentEnergyMeter -= 2 * EnergyDrainPerShot;
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		FHitResult Hit;
 		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 
+		UGameplayStatics::SpawnSoundAtLocation(this, MeleeSFX, this->K2_GetActorLocation(),
+																	  this->GetActorRotation());
 		if (Hit.bBlockingHit)
 		{
 			if (Hit.GetActor() != NULL)
@@ -308,7 +317,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 				LaunchDirection = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
 			}
 		}
-
+		
 		//FRotator From = FRotator( 0,this->GetActorRotation().Yaw,0);
 		FRotator To = FRotator(0, LaunchDirection.Rotation().Yaw, 0);
 		/*if(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) <150.f)
@@ -330,22 +339,21 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 			//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
 
 			float EnemyHealth = Enemy->CurrentHealth;
-			EnemyHealth -= 10.0f;
+			EnemyHealth = -10.0f;
 			Enemy->IsFlinching = true;
 			Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
-			if (EnemyHealth <= 0)
-			{
-				ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(
+			
+			ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(
 					UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-				Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
-				Player->Score += Player->Timer / 60.f + 1.f;
-				Player->SaveGame();
-			}
+			Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
+			Player->Score += Player->Timer / 60.f + 1.f;
+			Player->SaveGame();
+			
 			Enemy->CurrentHealth = EnemyHealth;
-			UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
+			//UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
 		}
-		DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"),
-		              GetMesh()->GetSocketLocation("MeleeEndSocket"), FColor::Red, false, 5.0f);
+		/*DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"),
+		              GetMesh()->GetSocketLocation("MeleeEndSocket"), FColor::Red, false, 5.0f);*/
 
 
 		MeleeCooldownTimer = MeleeCooldownDuration;
@@ -477,13 +485,26 @@ void ADeadBatteryCharacter::EnergyMeterChange(float Change)
 void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                   FVector NormalImpulse, const FHitResult& Hit)
 {
-	/*UE_LOG(LogTemp, Warning, TEXT("PLAYER HITTING!!!"));
+	/*UE_LOG(LogTemp, Warning, TEXT("PLAYER HITTING!!!"));*/
+	
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics
 	if (Enemy != nullptr && MeleeCooldownTimer>0)
 	{
-		Enemy->CurrentHealth = -10;
-	}*/
+		float EnemyHealth = Enemy->CurrentHealth;
+		EnemyHealth = -10.0f;
+		Enemy->IsFlinching = true;
+		Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
+		if (EnemyHealth <= 0)
+		{
+			ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(
+				UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+			Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
+			Player->Score += Player->Timer / 60.f + 1.f;
+			Player->SaveGame();
+		}
+		Enemy->CurrentHealth = EnemyHealth;
+	}
 }
 
 

@@ -82,7 +82,7 @@ void ASunSpot::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
 
 	if (ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(OtherActor))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap Begin");
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap Begin");
 		//SpotLightComp->SetWorldLocation(PlayerCharacter->GetActorLocation());
 		//CapsuleComp->SetCapsuleRadius(200.0f*(SunSpotTimer/10));
 		TimerDel.BindUFunction(this, FName("PlayerUnderSun"), PlayerCharacter);
@@ -93,7 +93,7 @@ void ASunSpot::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
 
 void ASunSpot::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap End");
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap End");
 	if (ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(OtherActor))
 	{
 

@@ -63,10 +63,10 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);*/
-	
+
 	CollisionCompCap = GetCapsuleComponent();
 	CollisionCompCap->SetCapsuleRadius(50.0f);
-	
+
 	LaunchDirection = FVector(0, 0, 0);
 	IsAiming = false;
 	CurrentBloodMeter = MaxBloodMeter;
@@ -149,7 +149,8 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Move);
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ADeadBatteryCharacter::StopMoving);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this,
+		                                   &ADeadBatteryCharacter::StopMoving);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::Look);
@@ -169,8 +170,10 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 		                                   &ADeadBatteryCharacter::StopSprinting);
 
 		//Shield
-		EnhancedInputComponent->BindAction(ShieldAction, ETriggerEvent::Triggered, this, &ADeadBatteryCharacter::StartShield);
-		EnhancedInputComponent->BindAction(ShieldAction, ETriggerEvent::Completed, this, &ADeadBatteryCharacter::StopShield);
+		EnhancedInputComponent->BindAction(ShieldAction, ETriggerEvent::Triggered, this,
+		                                   &ADeadBatteryCharacter::StartShield);
+		EnhancedInputComponent->BindAction(ShieldAction, ETriggerEvent::Completed, this,
+		                                   &ADeadBatteryCharacter::StopShield);
 	}
 }
 
@@ -178,6 +181,7 @@ void ADeadBatteryCharacter::StopMoving(const FInputActionValue& Value)
 {
 	StrafingValue = 0;
 }
+
 void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -190,8 +194,8 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 		// find out which way is forward
 		//if(!IsAiming)
 		//{
-			Rotation = Controller->GetControlRotation();
-			YawRotation = FRotator(0, Rotation.Yaw, 0);
+		Rotation = Controller->GetControlRotation();
+		YawRotation = FRotator(0, Rotation.Yaw, 0);
 		//}
 		//else
 		//{
@@ -205,13 +209,38 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		
 		if (MeleeCooldownTimer <= 0)
 		{
 			AddMovementInput(ForwardDirection, MovementVector.Y);
 			AddMovementInput(RightDirection, MovementVector.X);
-			
-			StrafingValue = MovementVector.X;
+
+			if (IsAiming)
+			{
+				if (AimRotation.Yaw > 90 && AimRotation.Yaw < 180)
+				{
+					if (MovementVector.X != 0)
+						StrafingValue = 0;
+					else
+						StrafingValue = MovementVector.Y;
+				}
+				else if (AimRotation.Yaw < -0 && AimRotation.Yaw > -90)
+				{
+					if (MovementVector.X != 0)
+						StrafingValue = 0;
+					else
+						StrafingValue = -MovementVector.Y;
+				}
+				else if (AimRotation.Yaw < -90 && AimRotation.Yaw > -180)
+				{
+					//Front
+					StrafingValue = MovementVector.X;
+				}
+				else if (AimRotation.Yaw > 0 && AimRotation.Yaw < 90)
+				{
+					//Back
+					StrafingValue = -MovementVector.X;
+				}
+			}
 		}
 	}
 }
@@ -247,21 +276,22 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	ActorSpawnParams.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	
-	
+
 	//this->SetActorRotation(FRotator( 0, LaunchDir.Rotation().Yaw, 0));
 	if (CanFire && CurrentEnergyMeter >= EnergyDrainPerShot && IsAiming && !ShieldSpawned)
 	{
 		CurrentEnergyMeter -= EnergyDrainPerShot;
 		GetWorld()->SpawnActor<ADeadBatteryProjectile>(CannonProjectile, GetMesh()->GetSocketLocation("CannonSocket"),
-		                                               FRotator(0, GetActorRotation().Yaw+6, 0),
+		                                               FRotator(0, GetActorRotation().Yaw + 6, 0),
 		                                               ActorSpawnParams);
 
 		//UE_LOG(LogTemp, Warning, TEXT("Rotation Needed: %f %f %f"),  this->GetActorRotation().Pitch,this->GetActorRotation().Yaw,this->GetActorRotation().Roll);
 		//UE_LOG(LogTemp, Warning, TEXT("Rotation Got: %f %f %f"), GetMesh()->GetSocketRotation("CannonSocket").Pitch,GetMesh()->GetSocketRotation("CannonSocket").Yaw,GetMesh()->GetSocketRotation("CannonSocket").Roll);
-		
-		UGameplayStatics::SpawnSoundAtLocation(this, CannonFireSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.4,0.6),FMath::RandRange(0.9,1.1));
-		
+
+		UGameplayStatics::SpawnSoundAtLocation(this, CannonFireSFX, this->K2_GetActorLocation(),
+		                                       this->GetActorRotation(), FMath::RandRange(0.4, 0.6),
+		                                       FMath::RandRange(0.9, 1.1));
+
 		CanFire = false;
 	}
 
@@ -291,9 +321,12 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		FHitResult HitObject;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);
-		GetWorld()->LineTraceSingleByChannel(HitObject, GetMesh()->GetSocketLocation("MeleeStartSocket"), GetMesh()->GetSocketLocation("MeleeEndSocket"), ECollisionChannel::ECC_Camera, Params, FCollisionResponseParams());
+		GetWorld()->LineTraceSingleByChannel(HitObject, GetMesh()->GetSocketLocation("MeleeStartSocket"),
+		                                     GetMesh()->GetSocketLocation("MeleeEndSocket"),
+		                                     ECollisionChannel::ECC_Camera, Params, FCollisionResponseParams());
 
-		if (AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(HitObject.GetActor())) {
+		if (AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(HitObject.GetActor()))
+		{
 			//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
 
 			float EnemyHealth = Enemy->CurrentHealth;
@@ -302,7 +335,8 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 			Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
 			if (EnemyHealth <= 0)
 			{
-				ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+				ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(
+					UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 				Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
 				Player->Score += Player->Timer / 60.f + 1.f;
 				Player->SaveGame();
@@ -310,8 +344,8 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 			Enemy->CurrentHealth = EnemyHealth;
 			UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
 		}
-		DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"), GetMesh()->GetSocketLocation("MeleeEndSocket"), FColor::Red, false, 5.0f);
-
+		DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"),
+		              GetMesh()->GetSocketLocation("MeleeEndSocket"), FColor::Red, false, 5.0f);
 
 
 		MeleeCooldownTimer = MeleeCooldownDuration;
@@ -320,7 +354,6 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 
 void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 {
-	
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
 	FHitResult Hit;
@@ -356,9 +389,11 @@ void ADeadBatteryCharacter::Aim(const FInputActionValue& Value)
 
 	if (!IsAiming)
 		AimGuide = GetWorld()->SpawnActor<AActor>(AimGuideClass, Hit.ImpactPoint, FRotator(0));
-	if(AimGuide!=nullptr)
+	if (AimGuide != nullptr)
 		AimGuide->SetActorLocation(Hit.ImpactPoint);
 	IsAiming = true;
+
+	UE_LOG(LogTemp, Warning, TEXT("AIM Rotation : %f "), AimRotation.Yaw);
 }
 
 void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
@@ -371,15 +406,16 @@ void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 // Enables Shield on Keypress and reduces Energy
 void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 {
-	if(IsUnderSun)
+	if (IsUnderSun)
 	{
 		StopShield(Value);
 		return;
 	}
-	
+
 	if (!ShieldSpawned)
 	{
-		ShieldAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, ShieldSFX,this->K2_GetActorLocation(),this->GetActorRotation());
+		ShieldAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, ShieldSFX, this->K2_GetActorLocation(),
+		                                                              this->GetActorRotation());
 		FVector SpineSocketLoc = GetMesh()->GetSocketLocation("ShieldSocket");
 		Shield = GetWorld()->SpawnActor<AActor>(PlayerShield, SpineSocketLoc, FRotator(0));
 		FAttachmentTransformRules a = FAttachmentTransformRules::SnapToTargetIncludingScale;
@@ -387,7 +423,8 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 		Shield->AttachToComponent(GetMesh(), a, "ShieldSocket");
 		ShieldSpawned = true;
 	}
-	if (CurrentEnergyMeter <= 0) {
+	if (CurrentEnergyMeter <= 0)
+	{
 		StopShield(Value);
 	}
 	EnergyMeterChange(-ShieldDrainRate);
@@ -396,13 +433,13 @@ void ADeadBatteryCharacter::StartShield(const FInputActionValue& Value)
 // Destroy Shield when player releases button
 void ADeadBatteryCharacter::StopShield(const FInputActionValue& Value)
 {
-	if(Shield!=nullptr)
+	if (Shield != nullptr)
 		Shield->Destroy();
-		
+
 	ShieldSpawned = false;
-		
-	if(ShieldAudioComponent != nullptr)
-		if(ShieldAudioComponent->IsPlaying())
+
+	if (ShieldAudioComponent != nullptr)
+		if (ShieldAudioComponent->IsPlaying())
 		{
 			ShieldAudioComponent->Stop();
 		}
@@ -438,7 +475,7 @@ void ADeadBatteryCharacter::EnergyMeterChange(float Change)
 
 
 void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+                                  FVector NormalImpulse, const FHitResult& Hit)
 {
 	/*UE_LOG(LogTemp, Warning, TEXT("PLAYER HITTING!!!"));
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
@@ -452,15 +489,16 @@ void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAct
 
 void ADeadBatteryCharacter::LoadGame()
 {
-	UMainSaveGame* SaveGameInstance = Cast<UMainSaveGame>(UGameplayStatics::CreateSaveGameObject(UMainSaveGame::StaticClass()));
+	UMainSaveGame* SaveGameInstance = Cast<UMainSaveGame>(
+		UGameplayStatics::CreateSaveGameObject(UMainSaveGame::StaticClass()));
 
-	if(UGameplayStatics::DoesSaveGameExist(TEXT("DeadBatterySave"),0) == false)
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("DeadBatterySave"), 0) == false)
 	{
 		UGameplayStatics::CreateSaveGameObject(TSubclassOf<UMainSaveGame>());
 	}
 	else
 	{
-		SaveGameInstance = Cast<UMainSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("DeadBatterySave"),0));
+		SaveGameInstance = Cast<UMainSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("DeadBatterySave"), 0));
 	}
 
 	HighScore = SaveGameInstance->HighScore;
@@ -468,21 +506,22 @@ void ADeadBatteryCharacter::LoadGame()
 
 void ADeadBatteryCharacter::SaveGame()
 {
-	UMainSaveGame* SaveGameInstance = Cast<UMainSaveGame>(UGameplayStatics::CreateSaveGameObject(UMainSaveGame::StaticClass()));
-	
-	if(Score > HighScore)
+	UMainSaveGame* SaveGameInstance = Cast<UMainSaveGame>(
+		UGameplayStatics::CreateSaveGameObject(UMainSaveGame::StaticClass()));
+
+	if (Score > HighScore)
 		HighScore = Score;
-	
+
 	SaveGameInstance->HighScore = HighScore;
 	SaveGameInstance->LastScore = Score;
-	
-	if(UGameplayStatics::DoesSaveGameExist(TEXT("DeadBatterySave"),0) == false)
+
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("DeadBatterySave"), 0) == false)
 	{
 		UGameplayStatics::CreateSaveGameObject(TSubclassOf<UMainSaveGame>());
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("DeadBatterySave"),0);
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("DeadBatterySave"), 0);
 	}
 	else
 	{
-		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("DeadBatterySave"),0);
+		UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("DeadBatterySave"), 0);
 	}
 }

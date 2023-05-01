@@ -408,6 +408,8 @@ void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 {
 	IsAiming = false;
 	AimGuide->Destroy();
+	StrafingValue = 0;
+	WalkingBackValue =0;
 }
 
 

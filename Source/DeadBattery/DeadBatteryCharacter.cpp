@@ -180,6 +180,7 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 void ADeadBatteryCharacter::StopMoving(const FInputActionValue& Value)
 {
 	StrafingValue = 0;
+	WalkingBackValue =0;
 }
 
 void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
@@ -218,27 +219,26 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 			{
 				if (AimRotation.Yaw > 90 && AimRotation.Yaw < 180)
 				{
-					if (MovementVector.X != 0)
-						StrafingValue = 0;
-					else
-						StrafingValue = MovementVector.Y;
+					StrafingValue = MovementVector.Y;
+					WalkingBackValue = MovementVector.X;
 				}
 				else if (AimRotation.Yaw < -0 && AimRotation.Yaw > -90)
 				{
-					if (MovementVector.X != 0)
-						StrafingValue = 0;
-					else
-						StrafingValue = -MovementVector.Y;
+					
+					StrafingValue = -MovementVector.Y;
+					WalkingBackValue = -MovementVector.X;
 				}
 				else if (AimRotation.Yaw < -90 && AimRotation.Yaw > -180)
 				{
 					//Front
 					StrafingValue = MovementVector.X;
+					WalkingBackValue = -MovementVector.Y;
 				}
 				else if (AimRotation.Yaw > 0 && AimRotation.Yaw < 90)
 				{
 					//Back
 					StrafingValue = -MovementVector.X;
+					WalkingBackValue = MovementVector.Y;
 				}
 			}
 		}

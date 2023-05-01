@@ -144,7 +144,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 	float StrafingValue;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+	float WalkingBackValue;
 
 	//Audio
 

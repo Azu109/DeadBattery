@@ -56,14 +56,23 @@ void ASunSpot::Tick(float DeltaTime)
 	
 	Super::Tick(DeltaTime);
 	SpotLightComp->SetVisibility(false);
+	SpotLightComp->SetVisibility(true);
 	if(SunSpotTimer>=0)
+	{
+		SpotLightComp->SetIntensity(90000 * (SunSpotTimer));
 		SunSpotTimer -=DeltaTime;
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	else
+	{
+		SpotLightComp->SetIntensity(0);
+		SunSpotTimer = 0;
+		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 
 	SpotLightComp->InnerConeAngle = 13.0*(SunSpotTimer/10);
 	SpotLightComp->OuterConeAngle = 13.3*(SunSpotTimer/10);
 	CapsuleComp->SetCapsuleRadius(200 * (SunSpotTimer/10));
-	
-	SpotLightComp->SetVisibility(true);
 }
 
 
@@ -73,8 +82,6 @@ void ASunSpot::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Other
 
 	if (ADeadBatteryCharacter* PlayerCharacter = Cast<ADeadBatteryCharacter>(OtherActor))
 	{
-
-		
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, "Overlap Begin");
 		//SpotLightComp->SetWorldLocation(PlayerCharacter->GetActorLocation());
 		//CapsuleComp->SetCapsuleRadius(200.0f*(SunSpotTimer/10));

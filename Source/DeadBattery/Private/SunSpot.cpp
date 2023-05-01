@@ -59,7 +59,7 @@ void ASunSpot::Tick(float DeltaTime)
 	SpotLightComp->SetVisibility(true);
 	if(SunSpotTimer>=0)
 	{
-		SpotLightComp->SetIntensity(90000 * (SunSpotTimer));
+		SpotLightComp->SetIntensity(200000 * (SunSpotTimer));
 		SunSpotTimer -=DeltaTime;
 		CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}

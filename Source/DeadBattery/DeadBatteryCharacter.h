@@ -144,7 +144,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
 	float StrafingValue;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+	float WalkingBackValue;
 
 	//Audio
 
@@ -153,6 +155,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
 	class USoundBase* ShieldSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* MeleeSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	class USoundBase* NoBulletSFX;
 
 	UAudioComponent* ShieldAudioComponent;
 

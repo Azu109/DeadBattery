@@ -180,7 +180,7 @@ void ADeadBatteryCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 void ADeadBatteryCharacter::StopMoving(const FInputActionValue& Value)
 {
 	StrafingValue = 0;
-	WalkingBackValue =0;
+	WalkingBackValue = 0;
 }
 
 void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
@@ -224,7 +224,6 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 				}
 				else if (AimRotation.Yaw < -0 && AimRotation.Yaw > -90)
 				{
-					
 					StrafingValue = -MovementVector.Y;
 					WalkingBackValue = -MovementVector.X;
 				}
@@ -294,13 +293,13 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 
 		CanFire = false;
 	}
-	else if(CanFire && CurrentEnergyMeter < EnergyDrainPerShot)
+	else if (CanFire && CurrentEnergyMeter < EnergyDrainPerShot)
 	{
 		UGameplayStatics::SpawnSoundAtLocation(this, NoBulletSFX, this->K2_GetActorLocation(),
-											   this->GetActorRotation());
+		                                       this->GetActorRotation());
 		CanFire = false;
 	}
-	
+
 	if (!IsAiming && MeleeCooldownTimer <= 0 && !ShieldSpawned && CurrentEnergyMeter >= 3 * EnergyDrainPerShot)
 	{
 		CurrentEnergyMeter -= 3 * EnergyDrainPerShot;
@@ -309,7 +308,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 
 		UGameplayStatics::SpawnSoundAtLocation(this, MeleeSFX, this->K2_GetActorLocation(),
-																	  this->GetActorRotation());
+		                                       this->GetActorRotation());
 		if (Hit.bBlockingHit)
 		{
 			if (Hit.GetActor() != NULL)
@@ -317,14 +316,14 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 				LaunchDirection = (Hit.ImpactPoint - GetMesh()->GetSocketLocation("CannonSocket")).GetSafeNormal();
 			}
 		}
-		
+
 		//FRotator From = FRotator( 0,this->GetActorRotation().Yaw,0);
 		FRotator To = FRotator(0, LaunchDirection.Rotation().Yaw, 0);
 		/*if(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation()) <150.f)
 			AimRotation = FMath::RInterpTo(From, To, DeltaTime,(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation())*5)/1000);
 		else
 			AimRotation = FMath::RInterpTo(From, To, DeltaTime,10.0);*/
-		
+
 		//this->SetActorRotation(To);
 
 		// Basic Line Trace Detection for Melee (TEST)
@@ -340,18 +339,21 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 			//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
 
 			float EnemyHealth = Enemy->CurrentHealth;
-			EnemyHealth = -10.0f;
-			Enemy->IsFlinching = true;
-			Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
-			
-			ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(
+			if (EnemyHealth != 0)
+			{
+				EnemyHealth = -10.0f;
+				Enemy->IsFlinching = true;
+				Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
+
+				ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(
 					UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-			Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
-			Player->Score += Player->Timer / 60.f + 1.f;
-			Player->SaveGame();
-			
-			Enemy->CurrentHealth = EnemyHealth;
-			//UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
+				Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
+				Player->Score += Player->Timer / 60.f + 1.f;
+				Player->SaveGame();
+
+				Enemy->CurrentHealth = EnemyHealth;
+				//UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
+			}
 		}
 		/*DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"),
 		              GetMesh()->GetSocketLocation("MeleeEndSocket"), FColor::Red, false, 5.0f);*/
@@ -410,7 +412,7 @@ void ADeadBatteryCharacter::StopAiming(const FInputActionValue& Value)
 	IsAiming = false;
 	AimGuide->Destroy();
 	StrafingValue = 0;
-	WalkingBackValue =0;
+	WalkingBackValue = 0;
 }
 
 
@@ -489,12 +491,14 @@ void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAct
                                   FVector NormalImpulse, const FHitResult& Hit)
 {
 	/*UE_LOG(LogTemp, Warning, TEXT("PLAYER HITTING!!!"));*/
-	
+
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
 	// Only add impulse and destroy projectile if we hit a physics
-	if (Enemy != nullptr && MeleeCooldownTimer>0)
+	if (Enemy != nullptr && MeleeCooldownTimer > 0)
 	{
 		float EnemyHealth = Enemy->CurrentHealth;
+		if (EnemyHealth <= 0)
+			return;
 		EnemyHealth = -10.0f;
 		Enemy->IsFlinching = true;
 		Enemy->FlinchTimer = Enemy->FlinchAnimDuration;

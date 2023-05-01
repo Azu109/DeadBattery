@@ -60,9 +60,13 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
 		
 		float EnemyHealth = Enemy->CurrentHealth;
+		if(EnemyHealth<=0)
+			return;
 		EnemyHealth -=  ProjectileDamage;
 		Enemy->IsFlinching = true;
 		Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
+
+		//Enemy->GetMesh()->AddImpulse(this->GetActorLocation(),NAME_None,true);
 		if(EnemyHealth<=0)
 		{
 			ADeadBatteryCharacter* Player = Cast<ADeadBatteryCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));

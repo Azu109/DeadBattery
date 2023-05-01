@@ -38,6 +38,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies")
 	TSubclassOf<class AEnemyCharacter> GhostEnemy;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Spawn Control")
+		int Wave = 0;
 	
 private:
 	void SpawnEnemies();
@@ -57,8 +60,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawn Control")
 		int NumOfEnemies = 5;
 
-	UPROPERTY(EditAnywhere, Category = "Spawn Control")
-		int Wave = 0;
+	
 
 	
 

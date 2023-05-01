@@ -324,7 +324,8 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 			AimRotation = FMath::RInterpTo(From, To, DeltaTime,(FVector::Dist(Hit.ImpactPoint, this->GetActorLocation())*5)/1000);
 		else
 			AimRotation = FMath::RInterpTo(From, To, DeltaTime,10.0);*/
-		this->SetActorRotation(To);
+		
+		//this->SetActorRotation(To);
 
 		// Basic Line Trace Detection for Melee (TEST)
 		FHitResult HitObject;

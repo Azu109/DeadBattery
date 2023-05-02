@@ -300,9 +300,9 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		CanFire = false;
 	}
 
-	if (!IsAiming && MeleeCooldownTimer <= 0 && !ShieldSpawned && CurrentEnergyMeter >= 3 * EnergyDrainPerShot)
+	if (!IsAiming && MeleeCooldownTimer <= 0 && !ShieldSpawned && CurrentEnergyMeter >= 2 * EnergyDrainPerShot)
 	{
-		CurrentEnergyMeter -= 3 * EnergyDrainPerShot;
+		CurrentEnergyMeter -= 2 * EnergyDrainPerShot;
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		FHitResult Hit;
 		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);

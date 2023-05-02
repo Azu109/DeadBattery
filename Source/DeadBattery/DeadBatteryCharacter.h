@@ -17,9 +17,10 @@ class ADeadBatteryCharacter : public ACharacter
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
-	
+
+public:
 	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 	
 	/** MappingContext */
@@ -71,6 +72,7 @@ public:
 	
 	AActor* AimGuide;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool ShieldSpawned;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health)
@@ -106,8 +108,13 @@ public:
 
 	float DeltaTime;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool CanFire;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Environment)
+	bool IsTakingDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Environment)
 	bool IsUnderSun;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
@@ -116,6 +123,8 @@ public:
 	double Timer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	double HighScore;
+
+	double TakingDamageTimer = 0.2f;
 	
 	FRotator AimRotation;
 
@@ -165,7 +174,7 @@ public:
 	UAudioComponent* ShieldAudioComponent;
 
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
     	void BloodMeterChange(float Change);
     
     	void EnergyMeterChange(float Change);
@@ -215,6 +224,7 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
+	
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	UPROPERTY(VisibleDefaultsOnly)

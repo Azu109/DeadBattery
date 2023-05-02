@@ -98,7 +98,7 @@ void AEnemyCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 	// Only add impulse and destroy projectile if we hit a physics
 	if (Player != nullptr && EnemyType == EEnemyType::ET_Melee)
 	{
-		Player->BloodMeterChange(-0.10);
+		//Player->BloodMeterChange(-0.10);
 		IsMeleeAttacking = true;
 	}
 }

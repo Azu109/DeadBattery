@@ -78,6 +78,8 @@ ADeadBatteryCharacter::ADeadBatteryCharacter()
 
 	ShieldSpawned = false;
 	Shield = NULL;
+	IsTakingDamage = false;
+	TakingDamageTimer = .1;
 }
 
 void ADeadBatteryCharacter::BeginPlay()
@@ -129,10 +131,24 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 		}
 	}
 
+	if(IsTakingDamage)
+	{
+		TakingDamageTimer-= DeltaSeconds;
+		if(TakingDamageTimer<=0)
+		{
+			TakingDamageTimer = .1;
+			IsTakingDamage = false;
+		}
+	}
+
 	DeltaTime = DeltaSeconds;
 
 	if (MeleeCooldownTimer > 0)
+	{
 		MeleeCooldownTimer -= DeltaSeconds;
+		if(MeleeCooldownTimer <=1)
+			IsMeleeAttacking = false;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -303,6 +319,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 	if (!IsAiming && MeleeCooldownTimer <= 0 && !ShieldSpawned && CurrentEnergyMeter >= 2 * EnergyDrainPerShot)
 	{
 		CurrentEnergyMeter -= 2 * EnergyDrainPerShot;
+		IsMeleeAttacking = true;
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		FHitResult Hit;
 		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, Hit);
@@ -353,6 +370,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 
 				Enemy->CurrentHealth = EnemyHealth;
 				//UE_LOG(LogTemp, Warning, TEXT("ENEMY HIT"));
+				
 			}
 		}
 		/*DrawDebugLine(GetWorld(), GetMesh()->GetSocketLocation("MeleeStartSocket"),
@@ -460,6 +478,12 @@ void ADeadBatteryCharacter::StopShield(const FInputActionValue& Value)
 
 void ADeadBatteryCharacter::BloodMeterChange(float Change)
 {
+	if(Change < -2)
+		IsTakingDamage = true;
+	else
+	{
+		IsTakingDamage = false;
+	}
 	CurrentBloodMeter = CurrentBloodMeter + Change;
 
 	if (CurrentBloodMeter < 0)

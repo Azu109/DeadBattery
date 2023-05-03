@@ -492,7 +492,7 @@ void ADeadBatteryCharacter::BloodMeterChange(float Change)
 	}
 	CurrentBloodMeter = CurrentBloodMeter + Change;
 
-	if (CurrentBloodMeter < 0)
+	if (CurrentBloodMeter <= 0)
 	{
 		CurrentBloodMeter = 0;
 		SaveGame();

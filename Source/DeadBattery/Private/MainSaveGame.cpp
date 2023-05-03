@@ -6,4 +6,5 @@
 UMainSaveGame::UMainSaveGame()
 {
 	HighScore = 0;
+	LastScore = 0;
 }

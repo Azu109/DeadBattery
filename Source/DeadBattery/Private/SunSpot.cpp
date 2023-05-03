@@ -102,7 +102,7 @@ void ASunSpot::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 		if(PlayerCharacter->IsUnderSun != false)
 			UGameplayStatics::SpawnSoundAtLocation(this, PowerDownSFX,this->K2_GetActorLocation(),this->GetActorRotation());
 
-		if(PowerUpAudioComponent !=nullptr)
+		if(PowerUpAudioComponent !=nullptr && PowerUpAudioComponent->IsPlaying())
 			PowerUpAudioComponent->Stop();
 		
 		PlayerCharacter->IsUnderSun = false;

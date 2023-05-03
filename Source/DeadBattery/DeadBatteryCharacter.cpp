@@ -489,6 +489,7 @@ void ADeadBatteryCharacter::BloodMeterChange(float Change)
 	if (CurrentBloodMeter < 0)
 	{
 		CurrentBloodMeter = 0;
+		SaveGame();
 		UGameplayStatics::OpenLevel(GetWorld(), FName("GameOverLevel")); //Should be game over
 	}
 

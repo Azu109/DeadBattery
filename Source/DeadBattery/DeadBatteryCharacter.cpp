@@ -268,7 +268,7 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 void ADeadBatteryCharacter::StartSprinting(const FInputActionValue& Value)
 {
 	IsSprinting = true;
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	GetCharacterMovement()->MaxWalkSpeed = 700.f;
 }
 
 void ADeadBatteryCharacter::StopSprinting(const FInputActionValue& Value)

@@ -48,6 +48,8 @@ void ASunSpot::BeginPlay()
 	SpotLightComp->bAffectsWorld = true;
 	SpotLightComp->Activate(true);
 	//SpotLightComp->SetWorldLocation(FVector(CapsuleComp->GetRelativeLocation()));
+	PowerUpAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, PowerUpSFX,this->K2_GetActorLocation(),this->GetActorRotation());
+	PowerUpAudioComponent->Stop();
 }
 
 // Called every frame

@@ -115,6 +115,9 @@ public:
 	bool IsTakingDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Environment)
+	bool IsMeleeHitting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Environment)
 	bool IsUnderSun;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)

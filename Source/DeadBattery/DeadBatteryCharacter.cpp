@@ -149,6 +149,10 @@ void ADeadBatteryCharacter::Tick(float DeltaSeconds)
 		if(MeleeCooldownTimer <=1)
 			IsMeleeAttacking = false;
 	}
+	else
+	{
+		IsMeleeHitting = false;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -228,6 +232,7 @@ void ADeadBatteryCharacter::Move(const FInputActionValue& Value)
 
 		if (MeleeCooldownTimer <= 0)
 		{
+			
 			AddMovementInput(ForwardDirection, MovementVector.Y);
 			AddMovementInput(RightDirection, MovementVector.X);
 
@@ -355,6 +360,7 @@ void ADeadBatteryCharacter::Shoot(const FInputActionValue& Value)
 		{
 			//UGameplayStatics::SpawnSoundAtLocation(this, EnemyHitSFX,this->K2_GetActorLocation(),this->GetActorRotation(),FMath::RandRange(0.8,1.2),FMath::RandRange(0.5,1.5));
 
+			IsMeleeHitting = true;
 			float EnemyHealth = Enemy->CurrentHealth;
 			if (EnemyHealth != 0)
 			{
@@ -534,6 +540,7 @@ void ADeadBatteryCharacter::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAct
 			Player->BloodMeterChange(Enemy->MaxHealth / 2.5f);
 			Player->Score += Player->Timer / 60.f + 1.f;
 			Player->SaveGame();
+			IsMeleeHitting = true;
 		}
 		Enemy->CurrentHealth = EnemyHealth;
 	}

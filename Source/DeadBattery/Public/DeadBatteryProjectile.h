@@ -46,6 +46,9 @@ public:
 	ADeadBatteryProjectile();
 	/** called when projectile hits something */
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool EnemyHit;
+	
 	//Begin Play
 	virtual void BeginPlay();
 	

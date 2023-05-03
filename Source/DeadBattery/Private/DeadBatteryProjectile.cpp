@@ -43,7 +43,7 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 {
 
 	UGameplayStatics::SpawnSoundAtLocation(this, AmmoCollsionSFX,this->K2_GetActorLocation());
-	bool EnemyHit = false;
+	EnemyHit = false;
 	AEnemyCharacter* Enemy = Cast<AEnemyCharacter>(OtherActor);
 	ADeadBatteryCharacter* PlayerHit  = Cast<ADeadBatteryCharacter>(OtherActor);
 
@@ -61,7 +61,10 @@ void ADeadBatteryProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		
 		float EnemyHealth = Enemy->CurrentHealth;
 		if(EnemyHealth<=0)
+		{
+			Destroy();
 			return;
+		}
 		EnemyHealth -=  ProjectileDamage;
 		Enemy->IsFlinching = true;
 		Enemy->FlinchTimer = Enemy->FlinchAnimDuration;
